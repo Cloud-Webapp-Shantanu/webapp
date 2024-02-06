@@ -19,7 +19,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Uses the healthController for routes
 app.use(publicRoutes);
 app.use(basicAuthenticator);
 app.use(userRoutes);
