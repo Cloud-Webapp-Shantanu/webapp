@@ -14,21 +14,21 @@ function basicAuthenticator(req, res, next) {
   const password = credentials[1];
 
   const user = User.findOne({ where: { username: username } })
-    .then(async(User) => {
-        if (!User) {
-            console.error('Unauthorised User (Invalid Username)');
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
+    .then(async (User) => {
+      if (!User) {
+        console.error('Unauthorised User (Invalid Username)');
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
 
-        const isValidPwd = await bcrypt.compare(password, User.password);
+      const isValidPwd = await bcrypt.compare(password, User.password);
 
-        if (!isValidPwd) {
-            console.error('Unauthorised User (Invalid Password)');
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
-        console.log('User authenticated successfully');
-        req.user = User;
-        next();
+      if (!isValidPwd) {
+        console.error('Unauthorised User (Invalid Password)');
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      console.log('User authenticated successfully');
+      req.user = User;
+      next();
     })
     .catch(err => {
       console.error('Service Unavailable' + err);

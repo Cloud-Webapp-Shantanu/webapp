@@ -1,7 +1,6 @@
 const express = require('express');
 const sequelize = require('./connection.js');
 const bodyParser = require('body-parser');
-const healthController = require('./controller/HealthController');
 const userRoutes = require('./routes/UserRoutes');
 const publicRoutes = require('./routes/PublicRoutes');
 const basicAuthenticator = require('./service/UserBasicAuthenticatorService.js');
@@ -31,8 +30,8 @@ app.listen(PORT, () => {
 });
 
 sequelize
-    .sync()
-    .then(result => {
-        console.log("Database connected");
-    })
-    .catch(err => console.log(err));
+  .sync()
+  .then(result => {
+    console.log("Database connected");
+  })
+  .catch(err => console.log(err));

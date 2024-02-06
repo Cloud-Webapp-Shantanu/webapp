@@ -148,7 +148,7 @@ const updateUserById = async (req, res) => {
         const updatedUser = await User.update(user, {
             where: { id: userId }
         });
-        console.info("User updated successfully"+updatedUser);
+        console.info("User updated successfully" + updatedUser);
         return res.status(204).json();
     } catch (error) {
         console.error("Error updating user by ID:", error.message);
