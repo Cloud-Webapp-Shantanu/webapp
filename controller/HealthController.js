@@ -3,24 +3,21 @@ const healthService = require('../service/HealthService');
 
 const router = express.Router();
 
-router.use('/', (req, res, next) => {
-  // Checks if the request method is GET
-  if (req.method !== 'GET') {
-    // Method Not Allowed
+const healthCheckMiddleware = (req, res, next) => {
+  if (req.method !== 'GET' && req.url.toString().includes('healthz')) {
     return res.status(405).header('Cache-Control', 'no-cache').send();
   }
-  // Checks if the Content-Length header is present and not zero
-  if (req.get('Content-Length') && parseInt(req.get('Content-Length')) !== 0) {
-    console.error('Invalid content for GET request:', req.body);
-    return res.status(400).header('Cache-Control', 'no-cache').send();
-  }
   next();
-});
+};
 
-router.get('/', async (req, res) => {
+const gethealthCheck = async (req, res) => {
   // Checks if the request includes any payload, if yes, then bad request
   if (Object.keys(req.query).length !== 0) {
     console.error('Invalid request parameters for GET:', req.query);
+    return res.status(400).header('Cache-Control', 'no-cache').send();
+  }
+  if (req.get('Content-Length') && parseInt(req.get('Content-Length')) !== 0) {
+    console.error('Invalid content for GET request:', req.body);
     return res.status(400).header('Cache-Control', 'no-cache').send();
   }
   try {
@@ -36,6 +33,9 @@ router.get('/', async (req, res) => {
     console.error('Error in health check:', error);
     res.status(500).send();
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  gethealthCheck,
+  healthCheckMiddleware
+}

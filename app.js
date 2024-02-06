@@ -3,6 +3,8 @@ const sequelize = require('./connection.js');
 const bodyParser = require('body-parser');
 const healthController = require('./controller/HealthController');
 const userRoutes = require('./routes/UserRoutes');
+const publicRoutes = require('./routes/PublicRoutes');
+const basicAuthenticator = require('./service/UserBasicAuthenticatorService.js');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -19,7 +21,8 @@ app.use((err, req, res, next) => {
 });
 
 // Uses the healthController for routes
-app.use('/healthz', healthController);
+app.use(publicRoutes);
+app.use(basicAuthenticator);
 app.use(userRoutes);
 
 // On server start

@@ -1,36 +1,6 @@
 const { DataTypes } = require('sequelize');
 const db = require('../connection.js');
 
-/**
- * @swagger
- * components:
- *  schemas:
- *      CreateUser:
- *        type: object
- *        required:
- *          - first_name
- *          - last_name
- *          - email
- *          - password
- *        properties:
- *          - first_name:
- *              type: string
- *              default: Sam
- *          - last_name:
- *              type: string
- *              default: 50
- *          - email:
- *              type: string
- *          - username:
- *              type: string
- *          - password:
- *              type: string
- *          - account_created:
- *              type: date
- *          - account_updated:
- *              type: date
- */
-
 const User = db.define('User', {
   id: {
     type: DataTypes.UUID,
