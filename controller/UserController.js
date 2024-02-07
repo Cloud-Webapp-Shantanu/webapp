@@ -16,6 +16,14 @@ const getUserById = async (req, res) => {
             console.error("Error retrieving user by ID: Invalid request or ID format.");
             return res.status(400).json({});
         }
+        if (Object.keys(req.query).length !== 0) {
+            console.error('Invalid request parameters for GET:', req.query);
+            return res.status(400).header('Cache-Control', 'no-cache').send();
+        }
+        if (req.get('Content-Length') && parseInt(req.get('Content-Length')) !== 0) {
+        console.error('Invalid content for GET request:', req.body);
+        return res.status(400).header('Cache-Control', 'no-cache').send();
+        }
         const user = await User.findByPk(userId);
 
         if (!user) {
@@ -33,7 +41,11 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const allowedFields = ['first_name', 'last_name', 'email', 'password'];
+        if (Object.keys(req.query).length !== 0) {
+            console.error('Invalid request parameters for POST:', req.query);
+            return res.status(400).header('Cache-Control', 'no-cache').send();
+        }
+        const allowedFields = ['first_name', 'last_name', 'email', 'password', 'account_created', 'account_updated'];
         const unexpectedFields = Object.keys(req.body).filter(
             (field) => !allowedFields.includes(field)
         );
@@ -94,11 +106,15 @@ const createUser = async (req, res) => {
 
 const updateUserById = async (req, res) => {
     try {
+        if (Object.keys(req.query).length !== 0) {
+            console.error('Invalid request parameters for PUT:', req.query);
+            return res.status(400).header('Cache-Control', 'no-cache').send();
+        }
         const allowedFields = ['first_name', 'last_name', 'password'];
         const unexpectedFields = Object.keys(req.body).filter(
             (field) => !allowedFields.includes(field)
         );
-        res.set("cache-control", "no-cache");
+        
         if (unexpectedFields.length > 0) {
             console.error("Error updating user by ID: Invalid request or ID format.");
             return res.status(400).json({

@@ -31,7 +31,8 @@ const User = db.define('User', {
     defaultValue: DataTypes.NOW
   },
   account_updated: {
-    type: DataTypes.DATE
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
   timestamps: false
