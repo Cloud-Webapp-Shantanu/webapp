@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: assignment_job
+    name: webapp_job
     runs-on: ubuntu-latest
 
     services:

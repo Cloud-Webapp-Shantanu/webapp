@@ -21,8 +21,8 @@ const getUserById = async (req, res) => {
             return res.status(400).header('Cache-Control', 'no-cache').send();
         }
         if (req.get('Content-Length') && parseInt(req.get('Content-Length')) !== 0) {
-        console.error('Invalid content for GET request:', req.body);
-        return res.status(400).header('Cache-Control', 'no-cache').send();
+            console.error('Invalid content for GET request:', req.body);
+            return res.status(400).header('Cache-Control', 'no-cache').send();
         }
         const user = await User.findByPk(userId);
 
@@ -43,6 +43,10 @@ const createUser = async (req, res) => {
     try {
         if (Object.keys(req.query).length !== 0) {
             console.error('Invalid request parameters for POST:', req.query);
+            return res.status(400).header('Cache-Control', 'no-cache').send();
+        }
+        if (req.headers.authorization !== undefined) {
+            console.error('Invalid request authorization parameters for POST');
             return res.status(400).header('Cache-Control', 'no-cache').send();
         }
         const allowedFields = ['first_name', 'last_name', 'email', 'password', 'account_created', 'account_updated'];
@@ -114,7 +118,6 @@ const updateUserById = async (req, res) => {
         const unexpectedFields = Object.keys(req.body).filter(
             (field) => !allowedFields.includes(field)
         );
-        
         if (unexpectedFields.length > 0) {
             console.error("Error updating user by ID: Invalid request or ID format.");
             return res.status(400).json({
@@ -144,20 +147,12 @@ const updateUserById = async (req, res) => {
             console.error("Error creating user: Password cannot be numeric");
             return res.status(400).json({ message: "Password cannot be numeric" });
         }
-        // if (!regex.test(userId)) {
-        //     console.error("Error updating user by ID: Invalid UUID format for userId. ID - ", userId);
-        //     return res.status(400).json({ message: "Invalid UUID format for userId" });
-        // }
         const userId = req.user.id;
+        if (!regex.test(userId)) {
+            console.error("Error updating user by ID: Invalid UUID format for userId. ID - ", userId);
+            return res.status(400).json({ message: "Invalid UUID format for userId" });
+        }
         const foundUser = await User.findByPk(userId);
-        // const accountId = req.user.id;
-        // if (foundUser.id !== accountId) {
-        //     console.error(
-        //       "Error updating assignment by ID: Permission denied. AccountId -  ",
-        //       accountId
-        //     );
-        //     return res.status(403).json({ message: "Permission Denied" });
-        // }
         if (!foundUser) {
             console.error("Error updating user by ID: User not found");
             return res.status(404).json({ message: "User not found" });
