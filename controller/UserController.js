@@ -33,6 +33,18 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
+        const allowedFields = ['first_name', 'last_name', 'email', 'password'];
+        const unexpectedFields = Object.keys(req.body).filter(
+            (field) => !allowedFields.includes(field)
+        );
+        res.set("cache-control", "no-cache");
+        if (unexpectedFields.length > 0) {
+            console.error("Error updating user by ID: Invalid request or ID format.");
+            return res.status(400).json({
+                message: "Unexpected fields in the request body",
+                unexpectedFields
+            });
+        }
         if (
             Object.keys(req.body).length == 0 ||
             req.body.first_name === undefined ||
@@ -63,23 +75,19 @@ const createUser = async (req, res) => {
         const user = {
             first_name: req.body.first_name,
             last_name: req.body.last_name,
-            email: req.body.email,
             username: req.body.email,
             password: hashedPassword
         }
         const newUser = await User.create(user);
-        // const userWithoutPassword = {
-        //     id: newUser.id,
-        //     first_name: newUser.first_name,
-        //     last_name: newUser.last_name,
-        //     email: newUser.email,
-        //     username: newUser.username
-        // };
+        // Deleting the password from object before returning response
         delete newUser.dataValues.password;
         console.info("User created successfully");
         return res.status(201).json(newUser);
     } catch (error) {
         console.error("Error creating user:", error.message);
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: "User with email address already exists" });
+        }
         return res.status(503).json({});
     }
 }
