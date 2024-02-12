@@ -3,10 +3,9 @@ const sequelize = require('./connection.js');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/UserRoutes');
 const publicRoutes = require('./routes/PublicRoutes');
-const basicAuthenticator = require('./service/UserBasicAuthenticatorService.js');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
 
@@ -20,12 +19,11 @@ app.use((err, req, res, next) => {
 });
 
 app.use(publicRoutes);
-app.use(basicAuthenticator);
 app.use(userRoutes);
 
 // On server start
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 sequelize
@@ -34,3 +32,8 @@ sequelize
     console.log("Database connected");
   })
   .catch(err => console.log(err));
+
+  module.exports = {
+    app,
+    port
+  };
