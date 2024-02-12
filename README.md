@@ -1,4 +1,4 @@
-Webapp for CSYE 6225 
+Webapp for CSYE
 
 ## Instructions:
 Open terminal
