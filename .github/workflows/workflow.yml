@@ -34,3 +34,5 @@ jobs:
 
     - name: Installing dependencies
       run: npm install
+    - name: gygu
+      run: exit 1
