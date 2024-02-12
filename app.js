@@ -22,7 +22,7 @@ app.use(publicRoutes);
 app.use(userRoutes);
 
 // On server start
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
@@ -35,5 +35,6 @@ sequelize
 
   module.exports = {
     app,
+    server,
     port
   };

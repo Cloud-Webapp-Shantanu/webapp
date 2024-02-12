@@ -1,5 +1,5 @@
 
-const { app } = require("../app.js");
+const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
@@ -12,7 +12,9 @@ beforeAll(async () => {
 afterAll(async () => {
     // Close database connection after all tests
     await sequelize.close();
-}, 10000);
+
+    server.close();
+});
 
 describe("/healthz", () => {
     it("should return a 200 status code", async () => {
