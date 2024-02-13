@@ -1,14 +1,17 @@
 
-const { app } = require("../app.js");
+const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
 
+afterAll((done) => {
+    server.close(done);
+});
+
 describe("/healthz", () => {
     it("should return a 200 status code", async () => {
-        const response = await request.get("/healthz");
-        expect(200);
+        const response = await request.get("/healthz")
+        .expect(200);
     });
-
 });
 
 describe('/v1/user/self endpoint', () => {
