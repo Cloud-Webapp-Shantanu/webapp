@@ -50,10 +50,5 @@ jobs:
     - name: Installing dependencies
       run: npm install
 
-    - name: Run ALTER script for PostgreSQL user password
-      run: |
-        sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD 'admin';\""
-
-
     - name: Runing node tests
       run: npm test
