@@ -1,0 +1,43 @@
+name: Integration Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: testcase_job
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_PORT: ${{ secrets.DB_PORT }}
+          POSTGRES_HOST: ${{ secrets.DB_HOST }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - name: Checking out Repo
+      uses: actions/checkout@v3
+
+    - name: Setting up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+
+    - name: Installing dependencies
+      run: npm install
+
+    - name: Run ALTER script for PostgreSQL user password
+      run: |
+        sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD 'admin';\""
+
+    - name: Runing node tests
+      run: npm test
