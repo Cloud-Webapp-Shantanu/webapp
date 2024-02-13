@@ -1,20 +1,20 @@
 
-const { app, server } = require("../app.js");
+const { app } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
-const sequelize = require('../connection.js');
+// const sequelize = require('../connection.js');
 
-beforeAll(async () => {
-    // Set up your database before running tests
-    await sequelize.sync();
-});
+// beforeAll(async () => {
+//     // Set up your database before running tests
+//     await sequelize.sync();
+// });
 
-afterAll(async () => {
-    // Close database connection after all tests
-    await sequelize.close();
+// afterAll(async () => {
+//     // Close database connection after all tests
+//     await sequelize.close();
 
-    server.close();
-});
+//     server.close();
+// });
 
 describe("/healthz", () => {
     it("should return a 200 status code", async () => {
