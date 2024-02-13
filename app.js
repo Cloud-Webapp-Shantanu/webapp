@@ -33,8 +33,8 @@ sequelize
   })
   .catch(err => console.log(err));
 
-  module.exports = {
-    app,
-    server,
-    port
-  };
+module.exports = {
+  app,
+  server,
+  port
+};

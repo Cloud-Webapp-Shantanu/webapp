@@ -2,26 +2,13 @@
 const { app } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
-// const sequelize = require('../connection.js');
-
-// beforeAll(async () => {
-//     // Set up your database before running tests
-//     await sequelize.sync();
-// });
-
-// afterAll(async () => {
-//     // Close database connection after all tests
-//     await sequelize.close();
-
-//     server.close();
-// });
 
 describe("/healthz", () => {
     it("should return a 200 status code", async () => {
-      const response = await request.get("/healthz");
-      expect(200);
+        const response = await request.get("/healthz");
+        expect(200);
     });
-  
+
 });
 
 describe('/v1/user/self endpoint', () => {
@@ -33,12 +20,12 @@ describe('/v1/user/self endpoint', () => {
 
     test('Test 1 - GET /v1/user/self - Validate account exists', async () => {
         const user = await request.post(getPostUserEndpoint)
-        .send({
-            first_name: 'John',
-            last_name: 'Doe',
-            email: basicAuthUsername,
-            password: basicAuthPassword,
-        });
+            .send({
+                first_name: 'John',
+                last_name: 'Doe',
+                email: basicAuthUsername,
+                password: basicAuthPassword,
+            });
 
         const response = await request.get(getUserEndpoint)
             .set('Authorization', `Basic ${authToken}`)
@@ -48,7 +35,7 @@ describe('/v1/user/self endpoint', () => {
         expect(response.body.first_name).toBe('John');
         expect(response.body.last_name).toBe('Doe');
     });
-    
+
     test('Test 2 - PUT /v1/user/self - Validate account was updated', async () => {
         const updateResponse = await request.put(getUserEndpoint)
             .send({
