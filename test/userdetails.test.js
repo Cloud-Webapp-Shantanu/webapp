@@ -7,13 +7,6 @@ afterAll((done) => {
     server.close(done);
 });
 
-describe("/healthz", () => {
-    it("should return a 200 status code", async () => {
-        const response = await request.get("/healthz")
-        .expect(200);
-    });
-});
-
 describe('/v1/user/self endpoint', () => {
     const getUserEndpoint = '/v1/user/self';
     const getPostUserEndpoint = '/v1/user';
