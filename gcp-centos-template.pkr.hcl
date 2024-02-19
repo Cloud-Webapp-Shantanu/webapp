@@ -15,7 +15,7 @@ source "googlecompute" "centos-source-image" {
   region           = var.region
   zone             = var.zone
   machine_type     = var.gcp_machine_type
-  credentials_file = "cloud-webapp-dev-b213a906e336.json"
+  // credentials_file = "cloud-webapp-dev-b213a906e336.json"
 }
 
 build {
