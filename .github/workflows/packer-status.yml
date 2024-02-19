@@ -1,0 +1,32 @@
+name: Packer CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setting up `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+            version: "latest"
+      
+      - name: Initialize packer
+        id: init
+        run: packer init .
+      
+      - name : Format Packer
+        id: format
+        run: packer fmt -check=true .
+        
+      - name: Run packer validate
+        id: validate
+        run: packer validate .
