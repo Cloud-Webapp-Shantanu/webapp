@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # Variables
-# WEBAPP_ZIP="webapp-main.zip"
-# POSTGRES_PASSWORD="admin"
-
+POSTGRES_PASSWORD="admin"
 echo "================================================================="
 echo "Updating packages"
 echo "================================================================="
 sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
+
+echo "================================================================="
+echo "Creating user group and user"
+echo "================================================================="
+sudo groupadd csye6225group
+sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user
 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
@@ -24,14 +28,17 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
 # Update PostgreSQL user password
-# sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
+sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
 
-# Create a database and user here if needed
+#Create a database and user here if needed
 
 echo "================================================================="
-echo "Installing application dependencies"
+echo "Installing application dependencies and setting it up"
 echo "================================================================="
-# unzip $WEBAPP_ZIP || { echo "Failed to unzip $WEBAPP_ZIP. Exiting."; exit 1; }
-# (cd webapp-main && npm install) || { echo "Failed to install application dependencies. Exiting."; exit 1; }
+sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip
+cd /opt/csye6225dir && sudo unzip webapp.zip
+sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service
+
+sudo chown -R csye6225user:csye6225group /opt/csye6225dir
 
 echo "=======================ALL DONE==================================="

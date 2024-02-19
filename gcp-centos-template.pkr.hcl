@@ -8,23 +8,28 @@ packer {
 }
 
 source "googlecompute" "centos-source-image" {
-  // image_name = "${var.image_name}_${formatdate("YY-MM-DD hh-mm-ss", timestamp())}"
-  project_id   = var.gcp_project_id
-  source_image = var.image_name
-  ssh_username = var.ssh_username
-  region       = var.region
-  zone         = var.zone
-  // machine_type = var.gcp_machine_type
-  // credentials_file = "cloud-webapp-dev-b213a906e336.json"
+  image_name       = "${var.image_name}-${formatdate("YY-MM-DD-hh-mm-ss", timestamp())}"
+  project_id       = var.gcp_project_id
+  source_image     = var.image_name
+  ssh_username     = var.ssh_username
+  region           = var.region
+  zone             = var.zone
+  machine_type     = var.gcp_machine_type
+  credentials_file = "cloud-webapp-dev-b213a906e336.json"
 }
 
 build {
   sources = ["source.googlecompute.centos-source-image"]
 
-  // provisioner "file" {
-  //   source      = "./webapp.zip"
-  //   destination = "/tmp/webapp.zip"
-  // }
+  provisioner "file" {
+    source      = "./webapp.zip"
+    destination = "/tmp/webapp.zip"
+  }
+
+  provisioner "file" {
+    source      = "./webapp.service"
+    destination = "/tmp/webapp.service"
+  }
 
   provisioner "shell" {
     script = "setup.sh"
