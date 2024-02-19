@@ -26,6 +26,9 @@ jobs:
       - name : Format Packer
         id: format
         run: packer fmt -check=true .
+
+      - name: Making zip of the project
+        run: zip -r webapp.zip .
         
       - name: Run packer validate
         id: validate
