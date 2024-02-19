@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build custom image job
+    name: Packer Build Custom Image Job
     runs-on: ubuntu-latest
 
     services:
