@@ -1,0 +1,101 @@
+name: Packer Build Custom Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build custom image job
+    runs-on: ubuntu-latest
+
+    services:
+        postgres:
+            image: postgres:latest
+            env:
+              POSTGRES_DB: ${{ secrets.DB_NAME }}
+              POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+              POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+              POSTGRES_PORT: ${{ secrets.DB_PORT }}
+              POSTGRES_HOST: ${{ secrets.DB_HOST }}
+            ports:
+              - 5432:5432
+            options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: "Creating env file"
+        run: |
+          touch .env
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          echo DB_USER=${{ secrets.DB_USERNAME }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo "cat .env"
+          cat .env
+          echo "ls -a ."
+          ls -a .
+          echo "ls -a ${{ github.workspace }}"
+          ls -a ${{ github.workspace }}
+  
+      - name: Setting up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+  
+      - name: Installing dependencies
+        run: npm install
+    
+      - name: Running node tests
+        run: npm test
+
+      - name: Making zip of the project
+        run: zip -r webapp.zip .
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          version: 'latest'
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+    
+      - name: Echo service_account_key
+        run: echo service_account_key
+        
+      - name: Setting up `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+            version: "latest"
+        
+      - name: Initialize packer
+        id: init
+        run: packer init .
+    
+      - name : Format Packer
+        id: format
+        run: packer fmt -check=true .
+        
+      - name: Run packer validate
+        id: validate
+        run: packer validate .
+
+      # - name: Build Packer
+      #   id: build
+      #   run: packer build .
+
+      - name: Copy artifact to custom image
+        run: |
+          # Copy the application artifact to the custom image
+
+      - name: Build custom image
+        run: |
+          # Build the custom image using Packer
+          # Create the local user csye6225 with the required configurations
+          # Install application dependencies and set up the application
+          # Copy the application artifacts and configuration files
+          # Configure systemd service file
+          # Run systemctl daemon-reload and systemctl enable <service_name>

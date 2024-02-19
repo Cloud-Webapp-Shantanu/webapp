@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Variables
-WEBAPP_ZIP="webapp-main.zip"
-POSTGRES_PASSWORD="admin"
+# WEBAPP_ZIP="webapp-main.zip"
+# POSTGRES_PASSWORD="admin"
 
 echo "================================================================="
 echo "Updating packages"
 echo "================================================================="
-# Uncomment the following line if you want to update packages
-# sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
+sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
@@ -25,14 +24,14 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
 # Update PostgreSQL user password
-sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
+# sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
 
 # Create a database and user here if needed
 
 echo "================================================================="
 echo "Installing application dependencies"
 echo "================================================================="
-unzip $WEBAPP_ZIP || { echo "Failed to unzip $WEBAPP_ZIP. Exiting."; exit 1; }
-(cd webapp-main && npm install) || { echo "Failed to install application dependencies. Exiting."; exit 1; }
+# unzip $WEBAPP_ZIP || { echo "Failed to unzip $WEBAPP_ZIP. Exiting."; exit 1; }
+# (cd webapp-main && npm install) || { echo "Failed to install application dependencies. Exiting."; exit 1; }
 
 echo "=======================ALL DONE==================================="
