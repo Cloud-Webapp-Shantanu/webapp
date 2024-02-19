@@ -83,19 +83,6 @@ jobs:
         id: validate
         run: packer validate .
 
-      # - name: Build Packer
-      #   id: build
-      #   run: packer build .
-
-      - name: Copy artifact to custom image
-        run: |
-          # Copy the application artifact to the custom image
-
-      - name: Build custom image
-        run: |
-          # Build the custom image using Packer
-          # Create the local user csye6225 with the required configurations
-          # Install application dependencies and set up the application
-          # Copy the application artifacts and configuration files
-          # Configure systemd service file
-          # Run systemctl daemon-reload and systemctl enable <service_name>
+      - name: Build Packer
+        id: build
+        run: packer build .
