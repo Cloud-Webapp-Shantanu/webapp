@@ -14,6 +14,7 @@ source "googlecompute" "centos-source-image" {
   ssh_username = var.ssh_username
   region       = var.region
   zone         = var.zone
+  image_family = var.image_family
   // machine_type = var.gcp_machine_type
   // credentials_file = "cloud-webapp-dev-b213a906e336.json"
 }

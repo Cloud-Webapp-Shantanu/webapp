@@ -1,4 +1,4 @@
-name: Integration Test
+name: Compile Check
 
 on:
   pull_request:

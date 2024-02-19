@@ -27,3 +27,8 @@ variable "image_name" {
   type    = string
   default = "centos-stream-8-v20240110"
 }
+
+variable "image_family" {
+  type    = string
+  default = "custom-image"
+}
