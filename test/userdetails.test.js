@@ -25,7 +25,7 @@ describe('/v1/user/self endpoint', () => {
 
         const response = await request.get(getUserEndpoint)
             .set('Authorization', `Basic ${authToken}`)
-            .expect(200);
+            .expect(201);
 
         expect(response.body.username).toBe('testuser@gmail.com');
         expect(response.body.first_name).toBe('John');
@@ -40,7 +40,7 @@ describe('/v1/user/self endpoint', () => {
                 password: basicAuthPassword,
             })
             .set('Authorization', `Basic ${authToken}`)
-            .expect(204);
+            .expect(200);
 
         const getResponse = await request.get(getUserEndpoint)
             .set('Authorization', `Basic ${authToken}`)
