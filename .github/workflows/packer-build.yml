@@ -42,9 +42,6 @@ jobs:
           echo "ls -a ${{ github.workspace }}"
           ls -a ${{ github.workspace }}
 
-      - name: Move env file to webapp directory
-        run: mv .env webapp/
-
       - name: Making zip of the project
         run: zip -r webapp.zip .
 
