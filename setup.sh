@@ -11,7 +11,7 @@ echo "================================================================="
 echo "Creating user group and user"
 echo "================================================================="
 sudo groupadd csye6225group
-sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user
+sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user || { echo "Failed to create user and group. Exiting."; exit 1; }
 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
@@ -44,6 +44,6 @@ sudo unzip webapp.zip || { echo "Failed to unzip webapp.zip . Exiting."; exit 1;
 sudo npm install || { echo "Failed to install npm . Exiting."; exit 1; }
 sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service || { echo "Failed to move webapp.service . Exiting."; exit 1; }
 
-sudo chown -R csye6225user:csye6225group /opt/csye6225dir
+sudo chown -R csye6225user:csye6225group /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 
 echo "=======================ALL DONE==================================="
