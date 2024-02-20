@@ -27,18 +27,22 @@ sudo postgresql-setup --initdb || { echo "PostgreSQL setup failed. Exiting."; ex
 sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
-# Update PostgreSQL user password
+echo "========Update PostgreSQL user password and configuration========"
 sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
+sudo sed -i 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf || { echo "Failed to update PostgreSQL configuration. Exiting."; exit 1; }
+sudo systemctl restart postgresql
 
 #Create a database and user here if needed
 
 echo "================================================================="
-echo "Installing application dependencies and setting it up"
+echo "Installing application dependencies in csye6225dir and setting it up"
 echo "================================================================="
-sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip
-cd /opt/csye6225dir && sudo unzip webapp.zip
-cd /opt/csye6225dir/webapp && sudo npm install
-sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service
+sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip || { echo "Failed to move zip to /opt/csye6225dir/. Exiting."; exit 1; }
+sudo chmod -R 775 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
+cd /opt/csye6225dir || { echo "Failed to cd into /opt/csye6225dir . Exiting."; exit 1; }
+sudo unzip webapp.zip || { echo "Failed to unzip webapp.zip . Exiting."; exit 1; }
+sudo npm install || { echo "Failed to install npm . Exiting."; exit 1; }
+sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service || { echo "Failed to move webapp.service . Exiting."; exit 1; }
 
 sudo chown -R csye6225user:csye6225group /opt/csye6225dir
 
