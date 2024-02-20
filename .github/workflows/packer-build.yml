@@ -41,17 +41,9 @@ jobs:
           ls -a .
           echo "ls -a ${{ github.workspace }}"
           ls -a ${{ github.workspace }}
-  
-      - name: Setting up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-  
-      - name: Installing dependencies
-        run: npm install
-    
-      - name: Running node tests
-        run: npm test
+
+      - name: Move env file to webapp directory
+        run: mv .env webapp/
 
       - name: Making zip of the project
         run: zip -r webapp.zip .

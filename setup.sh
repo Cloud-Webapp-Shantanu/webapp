@@ -37,6 +37,7 @@ echo "Installing application dependencies and setting it up"
 echo "================================================================="
 sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip
 cd /opt/csye6225dir && sudo unzip webapp.zip
+cd /opt/csye6225dir/webapp && sudo npm install
 sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service
 
 sudo chown -R csye6225user:csye6225group /opt/csye6225dir
