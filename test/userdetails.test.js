@@ -48,6 +48,6 @@ describe('/v1/user/self endpoint', () => {
 
         expect(getResponse.body.username).toBe('testuser@gmail.com');
         expect(getResponse.body.first_name).toBe('UpdatedJohn');
-        expect(getResponse.body.last_name).toBe('UpdatedDoe');
+        expect(getResponse.body.last_name).toBe('UpdatedDo');
     });
 });
