@@ -16,6 +16,7 @@ sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
 echo "================================================================="
+curl --silent --location https://rpm.nodesource.com/setup_21.x | sudo bash - || { echo "Failed to install Node. Exiting."; exit 1; }
 sudo yum install nodejs npm unzip -y || { echo "Failed to install Node, npm, or unzip. Exiting."; exit 1; }
 node -v
 
