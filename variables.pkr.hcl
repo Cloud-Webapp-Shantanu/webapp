@@ -13,11 +13,6 @@ variable "zone" {
   default = "us-east1-b"
 }
 
-variable "gcp_machine_type" {
-  type    = string
-  default = "e2-micro"
-}
-
 variable "ssh_username" {
   type    = string
   default = "admin"
@@ -30,5 +25,5 @@ variable "image_name" {
 
 variable "image_family" {
   type    = string
-  default = "custom-image"
+  default = "custom-image-family"
 }
