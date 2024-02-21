@@ -16,10 +16,10 @@ sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
 echo "================================================================="
-sudo yum install -y epel-release || { echo "Failed to install EPEL repository. Exiting."; exit 1; }
-curl --silent --location https://rpm.nodesource.com/setup_21.x | sudo bash - || { echo "Failed to install Node. Exiting."; exit 1; }
-sudo yum install nodejs npm unzip -y || { echo "Failed to install Node, npm, or unzip. Exiting."; exit 1; }
+curl --silent --location https://rpm.nodesource.com/setup_21.x | sudo bash - || { echo "Failed to curl Nodejs 21. Exiting."; exit 1; }
+sudo yum install nodejs -y || { echo "Failed to install Nodejs. Exiting."; exit 1; }
 node -v
+sudo install unzip -y || { echo "Failed to install unzip. Exiting."; exit 1; }
 
 echo "================================================================="
 echo "Installing and Setting up PostgreSQL"
