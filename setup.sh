@@ -8,12 +8,6 @@ echo "================================================================="
 sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
 
 echo "================================================================="
-echo "Creating user group and user"
-echo "================================================================="
-sudo groupadd csye6225group
-sudo useradd -s /bin/false -g csye6225group -d /opt/csye6225dir -m csye6225user || { echo "Failed to create user and group. Exiting."; exit 1; }
-
-echo "================================================================="
 echo "Install Node, npm, and unzip"
 echo "================================================================="
 curl --silent --location https://rpm.nodesource.com/setup_21.x | sudo bash - || { echo "Failed to curl Nodejs 21. Exiting."; exit 1; }
@@ -34,18 +28,21 @@ sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PA
 sudo sed -i 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf || { echo "Failed to update PostgreSQL configuration. Exiting."; exit 1; }
 sudo systemctl restart postgresql
 
-#Create a database and user here if needed
-
-echo "================================================================="
+echo "===================================================================="
 echo "Installing application dependencies in csye6225dir and setting it up"
-echo "================================================================="
+echo "===================================================================="
+sudo mkdir -p /opt/csye6225dir || { echo "Failed to create /opt/csye6225dir. Exiting."; exit 1; }
 sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip || { echo "Failed to move zip to /opt/csye6225dir/. Exiting."; exit 1; }
-sudo chmod -R 775 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 cd /opt/csye6225dir || { echo "Failed to cd into /opt/csye6225dir . Exiting."; exit 1; }
 sudo unzip webapp.zip || { echo "Failed to unzip webapp.zip . Exiting."; exit 1; }
 sudo npm install || { echo "Failed to install npm . Exiting."; exit 1; }
 sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service || { echo "Failed to move webapp.service . Exiting."; exit 1; }
 
-sudo chown -R csye6225user:csye6225group /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
+echo "================================================================="
+echo "Creating user and changing directory ownership"
+echo "================================================================="
+sudo adduser csye6225 --shell /usr/sbin/nologin || { echo "Failed to add csye6225 user. Exiting."; exit 1; }
+sudo chown -R csye6225:csye6225 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
+sudo chmod -R 744 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 
 echo "=======================ALL DONE==================================="
