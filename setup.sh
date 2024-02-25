@@ -15,18 +15,18 @@ sudo yum install nodejs -y || { echo "Failed to install Nodejs. Exiting."; exit 
 node -v
 sudo yum install unzip -y || { echo "Failed to install unzip. Exiting."; exit 1; }
 
-echo "================================================================="
-echo "Installing and Setting up PostgreSQL"
-echo "================================================================="
-sudo dnf install postgresql postgresql-server postgresql-contrib -y || { echo "Failed to install PostgreSQL. Exiting."; exit 1; }
-sudo postgresql-setup --initdb || { echo "PostgreSQL setup failed. Exiting."; exit 1; }
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
+# echo "================================================================="
+# echo "Installing and Setting up PostgreSQL"
+# echo "================================================================="
+# sudo dnf install postgresql postgresql-server postgresql-contrib -y || { echo "Failed to install PostgreSQL. Exiting."; exit 1; }
+# sudo postgresql-setup --initdb || { echo "PostgreSQL setup failed. Exiting."; exit 1; }
+# sudo systemctl start postgresql
+# sudo systemctl enable postgresql
 
-echo "========Update PostgreSQL user password and configuration========"
-sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
-sudo sed -i 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf || { echo "Failed to update PostgreSQL configuration. Exiting."; exit 1; }
-sudo systemctl restart postgresql
+# echo "========Update PostgreSQL user password and configuration========"
+# sudo su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$POSTGRES_PASSWORD';\"" || { echo "Failed to update PostgreSQL user password. Exiting."; exit 1; }
+# sudo sed -i 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf || { echo "Failed to update PostgreSQL configuration. Exiting."; exit 1; }
+# sudo systemctl restart postgresql
 
 echo "===================================================================="
 echo "Installing application dependencies in csye6225dir and setting it up"
@@ -43,6 +43,6 @@ echo "Creating user and changing directory ownership"
 echo "================================================================="
 sudo adduser csye6225 --shell /usr/sbin/nologin || { echo "Failed to add csye6225 user. Exiting."; exit 1; }
 sudo chown -R csye6225:csye6225 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
-sudo chmod -R 744 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
+sudo chmod -R 755 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 
 echo "=======================ALL DONE==================================="
