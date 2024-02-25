@@ -27,6 +27,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Making zip of the project
+        run: zip -r webapp.zip .
+
+      - name: Setting up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
       - name: "Creating env file"
         run: |
           touch .env
@@ -41,14 +49,6 @@ jobs:
           ls -a .
           echo "ls -a ${{ github.workspace }}"
           ls -a ${{ github.workspace }}
-
-      - name: Making zip of the project
-        run: zip -r webapp.zip .
-
-      - name: Setting up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
   
       - name: Installing dependencies
         run: npm install

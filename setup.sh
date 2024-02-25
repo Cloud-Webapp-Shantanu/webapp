@@ -31,9 +31,9 @@ sudo yum install unzip -y || { echo "Failed to install unzip. Exiting."; exit 1;
 echo "===================================================================="
 echo "Installing application dependencies in csye6225dir and setting it up"
 echo "===================================================================="
-sudo mkdir -p /opt/csye6225dir || { echo "Failed to create /opt/csye6225dir. Exiting."; exit 1; }
-sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp.zip || { echo "Failed to move zip to /opt/csye6225dir/. Exiting."; exit 1; }
-cd /opt/csye6225dir || { echo "Failed to cd into /opt/csye6225dir . Exiting."; exit 1; }
+sudo mkdir -p /opt/csye6225dir/webapp || { echo "Failed to create /opt/csye6225dir. Exiting."; exit 1; }
+sudo mv /tmp/webapp.zip /opt/csye6225dir/webapp/webapp.zip || { echo "Failed to move zip to /opt/csye6225dir/. Exiting."; exit 1; }
+cd /opt/csye6225dir/webapp || { echo "Failed to cd into /opt/csye6225dir . Exiting."; exit 1; }
 sudo unzip webapp.zip || { echo "Failed to unzip webapp.zip . Exiting."; exit 1; }
 sudo npm install || { echo "Failed to install npm . Exiting."; exit 1; }
 sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service || { echo "Failed to move webapp.service . Exiting."; exit 1; }
