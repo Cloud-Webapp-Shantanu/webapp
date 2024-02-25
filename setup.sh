@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-POSTGRES_PASSWORD="admin"
+# POSTGRES_PASSWORD="admin"
 echo "================================================================="
 echo "Updating packages"
 echo "================================================================="
