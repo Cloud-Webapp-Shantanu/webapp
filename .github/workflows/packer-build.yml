@@ -22,11 +22,6 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Setup PostgreSQL
-        run: |
-          sudo systemctl start postgresql.service
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-
       - name: "Creating env file"
         run: |
           touch .env
@@ -44,6 +39,11 @@ jobs:
   
       - name: Installing dependencies
         run: npm install
+
+      - name: Setup PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
   
       - name: Runing node tests
         run: npm test
