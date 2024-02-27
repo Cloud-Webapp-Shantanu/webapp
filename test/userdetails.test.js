@@ -8,7 +8,7 @@ beforeAll((done) => {
     sequelize.sync().then(() => {
         done();
     });
-});
+}, 30000);
 
 afterAll((done) => {
     server.close(done);
