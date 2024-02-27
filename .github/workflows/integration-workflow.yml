@@ -29,7 +29,6 @@ jobs:
         sudo systemctl enable postgresql
         
         sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-        sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.DB_NAME }} WITH OWNER = ${{ secrets.DB_USERNAME }};"
 
         sudo systemctl restart postgresql
     
