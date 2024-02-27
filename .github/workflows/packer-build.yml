@@ -10,19 +10,6 @@ jobs:
     name: Packer Build Custom Image Job
     runs-on: ubuntu-latest
 
-    services:
-        postgres:
-            image: postgres:latest
-            env:
-              POSTGRES_DB: ${{ secrets.DB_NAME }}
-              POSTGRES_USER: ${{ secrets.DB_USERNAME }}
-              POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-              POSTGRES_PORT: ${{ secrets.DB_PORT }}
-              POSTGRES_HOST: ${{ secrets.DB_HOST }}
-            ports:
-              - 5432:5432
-            options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -33,7 +20,12 @@ jobs:
       - name: Setting up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '20.x'
+
+      - name: Setup PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
 
       - name: "Creating env file"
         run: |

@@ -20,6 +20,11 @@ jobs:
     steps:
     - name: Checking out Repo
       uses: actions/checkout@v3
+
+    - name: Setup PostgreSQL
+      run: |
+        sudo systemctl start postgresql.service
+        sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
     
     - name: "Creating env file"
       run: |
@@ -43,10 +48,6 @@ jobs:
 
     - name: Installing dependencies
       run: npm install
-
-    - name: Install PostgreSQL
-      run: |
-        sudo systemctl start postgresql.service
 
     - name: Runing node tests
       run: npm test
