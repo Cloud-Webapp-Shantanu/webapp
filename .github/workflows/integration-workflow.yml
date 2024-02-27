@@ -25,6 +25,7 @@ jobs:
       run: |
         sudo systemctl start postgresql.service
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
+        npx sequelize-cli db:migrate
     
     - name: "Creating env file"
       run: |
