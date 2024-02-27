@@ -47,7 +47,6 @@ jobs:
     - name: Install PostgreSQL
       run: |
         sudo systemctl start postgresql.service
-        sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
 
     - name: Runing node tests
       run: npm test
