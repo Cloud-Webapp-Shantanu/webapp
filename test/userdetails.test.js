@@ -2,6 +2,14 @@
 const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
+const sequelize = require('../connection.js');
+
+beforeAll((done) => {
+    sequelize.sync()
+        .then(() => {   
+            done();
+        });
+    });
 
 afterAll((done) => {
     server.close(done);
