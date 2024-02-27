@@ -4,12 +4,9 @@ const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
 
-beforeAll((done) => {
-    sequelize.sync()
-        .then(() => {   
-            done();
-        });
-    });
+beforeAll(async() => {
+    await sequelize.sync();
+});
 
 afterAll((done) => {
     server.close(done);
