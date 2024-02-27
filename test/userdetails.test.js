@@ -6,7 +6,7 @@ const sequelize = require('../connection.js');
 const user = require('../model/User.js');
 
 beforeAll(async () => {
-   await user.sync({ force: true });
+   await user.sync();
 });
 
 afterAll((done) => {
