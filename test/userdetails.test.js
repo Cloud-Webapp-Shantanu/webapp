@@ -4,11 +4,10 @@ const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
 
-beforeAll(async () => {
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-    await sequelize.sync({ force: true }); 
-    console.log('Database synchronized successfully.');
+beforeAll((done) => {
+    sequelize.sync().then(() => {
+        done();
+    });
 });
 
 afterAll((done) => {
