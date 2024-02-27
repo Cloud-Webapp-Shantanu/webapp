@@ -10,6 +10,12 @@ const sequelize = require('../connection.js');
 //     });
 // });
 
+beforeAll((done) => {
+    sequelize.sync({ force: true }).then(() => {
+        done();
+    });
+});
+
 afterAll((done) => {
     server.close(done);
 });
