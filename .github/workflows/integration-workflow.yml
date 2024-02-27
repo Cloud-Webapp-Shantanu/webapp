@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+env:
+  DATABASE: ${{ secrets.DB_NAME }}
+  USERNAME: ${{ secrets.DB_USERNAME }}
+  PASSWORD: ${{ secrets.DB_PASSWORD }}
+  PORT: ${{ secrets.DB_PORT }}
+  HOST: ${{ secrets.DB_HOST }}
+
 jobs:
   build:
     name: testcase_job
