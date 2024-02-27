@@ -2,7 +2,6 @@
 const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
-const sequelize = require('../connection.js');
 const user = require('../model/User.js');
 
 beforeAll(async () => {
