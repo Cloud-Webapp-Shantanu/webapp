@@ -23,7 +23,6 @@ jobs:
 
     - name: Configure PostgreSQL
       run: |
-        cd ${{ github.workspace }}
         sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
         sudo sed -i 's/127.0.0.1\/32/0.0.0.0\/0/g' /etc/postgresql/*/main/pg_hba.conf
         sudo systemctl restart postgresql
