@@ -6,6 +6,7 @@ const user = require('../model/User.js');
 
 beforeAll(async () => {
    await user.sync();
+   console.log('user table synced to database');
 });
 
 afterAll((done) => {
