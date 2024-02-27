@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: webapp_job
+    name: compile_job
     runs-on: ubuntu-latest
 
     steps:

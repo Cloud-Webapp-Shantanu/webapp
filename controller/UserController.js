@@ -78,9 +78,9 @@ const createUser = async (req, res) => {
             console.error("Error creating user: Request body is invalid or missing required fields.");
             return res.status(400).json({ message: "Body Invalid" });
         }
-        if (req.body.password === "" || req.body.email === "") {
-            console.error("Error creating user: Email and Password cannot be empty");
-            return res.status(400).json({ message: "Email and Password cannot be empty" });
+        if (req.body.first_name === "" || req.body.last_name === "" || req.body.password === "" || req.body.email === "") {
+            console.error("Error creating user: First name, Last Name, Email and Password cannot be empty");
+            return res.status(400).json({ message: "First name, Last Name, Email and Password cannot be empty" });
         }
         if (typeof req.body.first_name === "number") {
             console.error("Error creating user: Firstname cannot be numeric");
@@ -147,9 +147,9 @@ const updateUserById = async (req, res) => {
                 console.error("Error creating user: Request body is invalid or missing required fields.");
                 return res.status(400).json({ message: "Body Invalid" });
             }
-            if (req.body.password === "") {
-                console.error("Error creating user: Password cannot be empty");
-                return res.status(400).json({ message: "Password cannot be empty" });
+            if (req.body.first_name === "" || req.body.last_name === "" || req.body.password === "") {
+                console.error("Error creating user: First name, Last Name, and Password cannot be empty");
+                return res.status(400).json({ message: "First name, Last Name, and Password cannot be empty" });
             }
             if (typeof req.body.first_name === "number") {
                 console.error("Error creating user: Firstname cannot be numeric");
