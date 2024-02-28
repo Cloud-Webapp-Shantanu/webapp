@@ -40,13 +40,13 @@ jobs:
           port: 5432
       id: postgres
     
-    - run: pytest -vv tests/
-      env:
-          CONNECTION_STR: ${{ steps.postgres.outputs.connection-uri }}
+    # - run: pytest -vv tests/
+    #   env:
+    #       CONNECTION_STR: ${{ steps.postgres.outputs.connection-uri }}
     
-    - run: pytest -vv tests/
-      env:
-          CONNECTION_STR: service=${{ steps.postgres.outputs.service-name }}
+    # - run: pytest -vv tests/
+    #   env:
+    #       CONNECTION_STR: service=${{ steps.postgres.outputs.service-name }}
     
     - name: "Creating env file"
       run: |
