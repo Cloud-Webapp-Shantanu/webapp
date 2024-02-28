@@ -3,9 +3,11 @@ const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
+const User = require('../model/User.js');
 
-beforeAll(async () => {
-    await sequelize.sync({ force: true });
+beforeAll((done) => {
+    User.sync({ force: true });
+    sequelize.sync({ force: true });
 });
 
 afterAll((done) => {
