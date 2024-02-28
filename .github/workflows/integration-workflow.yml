@@ -21,15 +21,32 @@ jobs:
     - name: Checking out Repo
       uses: actions/checkout@v3
 
+    # - name: Setup PostgreSQL
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y postgresql postgresql-contrib
+    #     sudo systemctl start postgresql
+    #     sudo systemctl enable postgresql
+    #     sudo sed -i 's/peer/scram-sha-256/' /etc/postgresql/*/main/pg_ident.conf
+    #     sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
+    #     sudo systemctl restart postgresql
+
     - name: Setup PostgreSQL
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql postgresql-contrib
-        sudo systemctl start postgresql
-        sudo systemctl enable postgresql
-        sudo sed -i 's/peer/scram-sha-256/' /etc/postgresql/*/main/pg_ident.conf
-        sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
-        sudo systemctl restart postgresql
+      uses: ikalnytskyi/action-setup-postgres@v5
+      with:
+          username: postgres
+          password: postgres
+          database: postgres
+          port: 5432
+      id: postgres
+    
+    - run: pytest -vv tests/
+      env:
+          CONNECTION_STR: ${{ steps.postgres.outputs.connection-uri }}
+    
+    - run: pytest -vv tests/
+      env:
+          CONNECTION_STR: service=${{ steps.postgres.outputs.service-name }}
     
     - name: "Creating env file"
       run: |
