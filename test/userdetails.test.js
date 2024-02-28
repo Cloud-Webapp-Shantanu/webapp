@@ -4,8 +4,8 @@ const supertest = require("supertest");
 const request = supertest(app);
 const user = require('../model/User.js');
 
-beforeAll(() => {
-   user.sync();
+beforeAll(async () => {
+   await user.sync();
    console.log('user table synced to database');
 });
 
