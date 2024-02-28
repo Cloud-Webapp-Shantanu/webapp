@@ -10,21 +10,21 @@ let sequelize;
     port: process.env.DB_PORT,
   });
 
-  // sequelize.authenticate()
-  //   .then(() => {
-  //     console.log('Connection has been established successfully.');
-  //   })
-  //   .catch((error) => {
-  //     console.error('Unable to connect to the database:', error);
-  //   });
+  sequelize.authenticate()
+    .then(() => {
+      console.log('Connection has been established successfully.');
+    })
+    .catch((error) => {
+      console.error('Unable to connect to the database:', error);
+    });
 
-  //   sequelize.sync({ force: process.env.DB_FORCE_SYNC === 'true' })
-  //   .then(() => {
-  //     console.log('All models were synchronized successfully.');
-  //   })
-  //   .catch((error) => {
-  //     console.error('Unable to synchronize the models:', error);
-  //   });
+    // sequelize.sync({ force: process.env.NODE_ENV === 'test'})
+    // .then(() => {
+    //   console.log('All models were synchronized successfully.');
+    // })
+    // .catch((error) => {
+    //   console.error('Unable to synchronize the models:', error);
+    // });
 
 // } 
 // else {

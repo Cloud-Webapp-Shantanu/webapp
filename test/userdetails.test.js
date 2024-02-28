@@ -4,10 +4,10 @@ const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
 
-// beforeAll(async ()  => {
-//     await sequelize.authenticate();
-//     await sequelize.sync({ force: true });
-// });
+beforeAll(async ()  => {
+    await sequelize.authenticate();
+    await sequelize.sync({ force: true });
+});
 
 afterAll((done) => {
     server.close(done);
