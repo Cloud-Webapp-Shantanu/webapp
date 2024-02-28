@@ -24,10 +24,10 @@ jobs:
     - name: Setup PostgreSQL
       uses: ikalnytskyi/action-setup-postgres@v5
       with:
-          username: ${{ secrets.DB_USERNAME }}
-          password: ${{ secrets.DB_PASSWORD }}
-          database: ${{ secrets.DB_NAME }}
-          port: ${{ secrets.DB_PORT }}
+          username: postgres
+          password: admin
+          database: postgres
+          port: 5432
       id: postgres
     
     - name: "Creating env file"
