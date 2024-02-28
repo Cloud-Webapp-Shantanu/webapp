@@ -21,14 +21,23 @@ jobs:
     - name: Checking out Repo
       uses: actions/checkout@v3
 
+    # - name: Setup PostgreSQL
+    #   uses: ikalnytskyi/action-setup-postgres@v5
+    #   with:
+    #       username: ${{ secrets.DB_USERNAME }}
+    #       password: ${{ secrets.DB_PASSWORD }}
+    #       database: ${{ secrets.DB_NAME }}
+    #       port: ${{ secrets.DB_PORT }}
+    #   id: postgres
+
     - name: Setup PostgreSQL
-      uses: ikalnytskyi/action-setup-postgres@v5
-      with:
-          username: postgres
-          password: admin
-          database: postgres
-          port: 5432
-      id: postgres
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql postgresql-contrib
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+        sudo -u postgres psql -c "ALTER USER ${{ secrets.DB_USERNAME }} WITH PASSWORD '${{ secrets.DB_PASSWORD }}';"
+        sudo systemctl restart postgresql
     
     - name: "Creating env file"
       run: |
