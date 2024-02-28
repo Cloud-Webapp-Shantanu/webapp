@@ -5,11 +5,11 @@ const request = supertest(app);
 const user = require('../model/User.js');
 const sequalize = require('../connection.js');
 
-beforeAll(async () => {
-    await sequalize.sync({ force: true });
-    await user.sync();
-    console.log('user table synced to database');
-});
+// beforeAll(async () => {
+//     await sequalize.sync({ force: true });
+//     await user.sync();
+//     console.log('user table synced to database');
+// });
 
 afterAll((done) => {
     server.close(done);
