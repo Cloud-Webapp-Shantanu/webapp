@@ -3,10 +3,12 @@ const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
 const user = require('../model/User.js');
+const sequalize = require('../connection.js');
 
 beforeAll(async () => {
-   await user.sync();
-   console.log('user table synced to database');
+    await sequalize.sync({ force: true });
+    await user.sync();
+    console.log('user table synced to database');
 });
 
 afterAll((done) => {
