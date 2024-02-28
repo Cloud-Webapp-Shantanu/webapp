@@ -5,10 +5,10 @@ const request = supertest(app);
 const sequelize = require('../connection.js');
 const User = require('../model/User.js');
 
-beforeAll((done) => {
-    User.sync({ force: true });
-    sequelize.sync({ force: true });
-});
+// beforeAll((done) => {
+//     User.sync({ force: true });
+//     sequelize.sync({ force: true });
+// });
 
 afterAll((done) => {
     server.close(done);
