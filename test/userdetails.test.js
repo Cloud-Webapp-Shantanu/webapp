@@ -6,7 +6,7 @@ const sequelize = require('../connection.js');
 
 beforeAll(async ()  => {
     await sequelize.authenticate();
-    await sequelize.sync({ force: true });
+    // await sequelize.sync({ force: true });
 });
 
 afterAll((done) => {
