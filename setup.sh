@@ -48,7 +48,7 @@ sudo chmod -R 755 /opt/csye6225dir || { echo "Failed to change directory permiss
 echo "================================================================="
 echo "Installing and setting up GCP OPS Agent"
 echo "================================================================="
-curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
-sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+sudo curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh || { echo "Failed to curl add-google-cloud-ops-agent-repo.sh. Exiting."; exit 1; }
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install || { echo "Failed to install GCP OPS Agent. Exiting."; exit 1; }
 
 echo "=======================ALL DONE==================================="
