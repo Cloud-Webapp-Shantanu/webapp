@@ -45,4 +45,10 @@ sudo adduser csye6225 --shell /usr/sbin/nologin || { echo "Failed to add csye622
 sudo chown -R csye6225:csye6225 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 sudo chmod -R 755 /opt/csye6225dir || { echo "Failed to change directory permissions. Exiting."; exit 1; }
 
+echo "================================================================="
+echo "Installing and setting up GCP OPS Agent"
+echo "================================================================="
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
 echo "=======================ALL DONE==================================="
