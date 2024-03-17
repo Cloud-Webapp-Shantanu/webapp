@@ -3,6 +3,7 @@ const sequelize = require('./connection.js');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/UserRoutes');
 const publicRoutes = require('./routes/PublicRoutes');
+const { logger } = require('../winston-log/winston');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -12,7 +13,7 @@ app.use(bodyParser.json());
 //Check if the json request body is valid
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    console.error('Invalid JSON syntax:', err.message);
+    logger.error('Invalid JSON syntax:', err.message);
     return res.status(400).header('Cache-Control', 'no-cache').send();
   }
   next();

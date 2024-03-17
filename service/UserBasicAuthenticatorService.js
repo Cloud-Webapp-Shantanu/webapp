@@ -1,5 +1,6 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
+const { logger } = require('../winston-log/winston');
 
 function basicAuthenticator(req, res, next) {
   const authHeader = req.headers.authorization;
