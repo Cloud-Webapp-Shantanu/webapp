@@ -1,11 +1,12 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
+const { logger, winston } = require("../winston-log/winston.js");
 
 function basicAuthenticator(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Basic ')) {
-    console.error('Unauthorised User');
+    logger.error('Unauthorised User');
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
@@ -16,14 +17,14 @@ function basicAuthenticator(req, res, next) {
   const user = User.findOne({ where: { username: username } })
     .then(async (User) => {
       if (!User) {
-        console.error('Unauthorised User (Invalid Username)');
+        logger.error('Unauthorised User (Invalid Username)');
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
       const isValidPwd = await bcrypt.compare(password, User.password);
 
       if (!isValidPwd) {
-        console.error('Unauthorised User (Invalid Password)');
+        logger.error('Unauthorised User (Invalid Password)');
         return res.status(401).json({ message: 'Unauthorized' });
       }
       console.log('User authenticated successfully');
@@ -31,7 +32,7 @@ function basicAuthenticator(req, res, next) {
       next();
     })
     .catch(err => {
-      console.error('Service Unavailable' + err);
+      logger.error('Service Unavailable' + err);
       res.status(503).send({ message: 'Service Unavailable' });
       console.log(err);
     });
