@@ -3,7 +3,7 @@ const sequelize = require('./connection.js');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/UserRoutes');
 const publicRoutes = require('./routes/PublicRoutes');
-const { logger } = require('../winston-log/winston');
+const { logger } = require('./winston-log/winston');
 
 const app = express();
 const port = process.env.PORT || 8080;
