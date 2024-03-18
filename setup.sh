@@ -51,4 +51,7 @@ echo "================================================================="
 sudo curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh || { echo "Failed to curl add-google-cloud-ops-agent-repo.sh. Exiting."; exit 1; }
 sudo bash add-google-cloud-ops-agent-repo.sh --also-install || { echo "Failed to install GCP OPS Agent. Exiting."; exit 1; }
 
+sudo cp /tmp/config.yaml /etc/google-cloud-ops-agent/config.yaml || { echo "Failed to copy config.yaml. Exiting."; exit 1; }
+sudo systemctl restart google-cloud-ops-agent || { echo "Failed to restart GCP OPS Agent. Exiting."; exit 1; }
+
 echo "=======================ALL DONE==================================="

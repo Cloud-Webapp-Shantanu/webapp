@@ -1,12 +1,9 @@
 const winston = require("winston");
-const { createLogger, transports, format } = require("winston");
+const { transports, format } = require("winston");
 
 const customFormat = format.printf(({ timestamp, level, message }) => {
   return `(${timestamp}) - [${level.toUpperCase()}] - "${message}"`;
 });
-
-const {LoggingWinston} = require('@google-cloud/logging-winston');
-const loggingWinston = new LoggingWinston();
 
 const logger = winston.createLogger({
     level: "info",
@@ -18,9 +15,8 @@ const logger = winston.createLogger({
       service: "webapp",
     },
     transports: [
-        new transports.File({ filename: "./logs/audit.log", level: "error" }),
-        new transports.File({ filename: "./logs/webapp.log" }),
-        loggingWinston,
+      // process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/audit.log", level: "error" }) : new transports.File({ filename: "./var/log/audit.log", level: "error" }),
+      process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/webapp.log" }) : new transports.File({ filename: "/var/log/webapp.log" }),
     ],
 });
 
