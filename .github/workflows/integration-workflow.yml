@@ -31,6 +31,7 @@ jobs:
         echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
         echo DB_PORT=${{ secrets.DB_PORT }} >> .env
         echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+        echo ENV=${{ secrets.ENV }} >> .env
         echo "cat .env"
         cat .env
         echo "ls -a ."
