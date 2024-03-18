@@ -31,6 +31,11 @@ build {
     destination = "/tmp/webapp.service"
   }
 
+  provisioner "file" {
+    source      = "./winston-log/config.yaml"
+    destination = "/tmp/config.yaml"
+  }
+
   provisioner "shell" {
     script = "setup.sh"
   }
