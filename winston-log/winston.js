@@ -15,8 +15,9 @@ const logger = winston.createLogger({
       service: "webapp",
     },
     transports: [
+      new winston.transports.Console(),
       // process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/audit.log", level: "error" }) : new transports.File({ filename: "./var/log/audit.log", level: "error" }),
-      process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/webapp.log" }) : new transports.File({ filename: "/var/log/webapp.log" }),
+      process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/webapp.log" }) : new transports.File({ filename: "/var/log/webapp/webapp.log" }),
     ],
 });
 
