@@ -11,11 +11,11 @@ const logger = winston.createLogger({
         format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         customFormat
     ),
-    defaultMeta: {
-      service: "webapp",
-    },
+    // defaultMeta: {
+    //   service: "webapp",
+    // },
     transports: [
-      new winston.transports.Console(),
+      // new winston.transports.Console(),
       // process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/audit.log", level: "error" }) : new transports.File({ filename: "./var/log/audit.log", level: "error" }),
       process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/webapp.log" }) : new transports.File({ filename: "/var/log/webapp/webapp.log" }),
     ],
