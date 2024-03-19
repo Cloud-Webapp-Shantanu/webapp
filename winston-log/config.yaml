@@ -10,10 +10,15 @@ logging:
     my-app-processor:
       type: parse_json
       time_key: timestamp 
-      time_format: "YYYY-MM-DD hh:mm:ss A"  
+      time_format: 'YYYY-MM-DD HH:mm:ss'
+    move_severity:
+      type: modify_fields
+      fields:
+        severity:
+          copy_from: jsonPayload.severity
 
   service:
     pipelines:
       default_pipeline:
         receivers: [my-app-receiver]
-        processors: [my-app-processor]
+        processors: [my-app-processor, move_severity]
