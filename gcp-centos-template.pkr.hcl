@@ -27,16 +27,16 @@ build {
   }
 
   provisioner "file" {
+    source      = "./webapp.service"
+    destination = "/tmp/webapp.service"
+  }
+
+  provisioner "file" {
     source      = "./winston-log/config.yaml"
     destination = "/tmp/config.yaml"
   }
 
   provisioner "shell" {
     script = "setup.sh"
-  }
-
-  provisioner "file" {
-    source      = "./webapp.service"
-    destination = "/tmp/webapp.service"
   }
 }
