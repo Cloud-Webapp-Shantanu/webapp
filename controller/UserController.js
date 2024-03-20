@@ -15,7 +15,7 @@ const getUserById = async (req, res) => {
         basicAuthenticator(req, res, () => {
             res.set("cache-control", "no-cache");
             const userId = req.user.id;
-            console.log(userId);
+            logger.debug("User ID: ", userId);
             if (Object.keys(req.body).length > 0 || !regex.test(userId)) {
                 logger.error("Error retrieving user by ID: Invalid request or ID format.");
                 return res.status(400).json({});
@@ -30,8 +30,7 @@ const getUserById = async (req, res) => {
             }
             (async () => {
                 const user = await User.findByPk(userId);
-
-
+                logger.debug("User: ", user);
                 if (!user) {
                     logger.error("Error retrieving user by ID: User not found");
                     return res.status(404).json({ message: 'User not found' });
@@ -138,7 +137,6 @@ const updateUserById = async (req, res) => {
                     unexpectedFields
                 });
             }
-
             if (
                 Object.keys(req.body).length == 0 ||
                 req.body.first_name === undefined ||
