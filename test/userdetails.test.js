@@ -3,6 +3,7 @@ const { app, server } = require("../app.js");
 const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
+const { logger } = require('../winston-log/winston');
 
 beforeAll(async () => {
     await sequelize.authenticate();
@@ -35,6 +36,7 @@ describe('/v1/user/self endpoint', () => {
         expect(response.body.username).toBe('testuser@gmail.com');
         expect(response.body.first_name).toBe('John');
         expect(response.body.last_name).toBe('Doe');
+        logger.warn('Entries in the database need to deleted after the test');
     });
 
     test('Test 2 - PUT /v1/user/self - Validate account was updated', async () => {
@@ -54,5 +56,6 @@ describe('/v1/user/self endpoint', () => {
         expect(getResponse.body.username).toBe('testuser@gmail.com');
         expect(getResponse.body.first_name).toBe('UpdatedJohn');
         expect(getResponse.body.last_name).toBe('UpdatedDoe');
+        logger.warn('Entries in the database need to deleted after the test');
     });
 });
