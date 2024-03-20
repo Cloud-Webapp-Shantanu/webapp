@@ -24,7 +24,10 @@ const useFormat = format.printf(({ timestamp, level, message }) => {
 
 const logger = winston.createLogger({
   level: 'info',
-  format: useFormat,
+  format: format.combine(
+    format.timestamp(),
+    useFormat,
+  ),
   transports: [
     process.env.ENV === 'dev' ? new transports.File({ filename: "./logs/webapp.log" }) : new transports.File({ filename: "/var/log/webapp/webapp.log" }),
   ],
