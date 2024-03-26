@@ -1,7 +1,9 @@
 const User = require('../model/User.js');
+const Email = require('../model/Email.js');
 const bcrypt = require('bcrypt');
 const basicAuthenticator = require('../service/UserBasicAuthenticatorService.js');
 const { logger } = require('../winston-log/winston');
+const { publishMessage } = require('../service/PubSubService.js');
 const regex =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
@@ -56,13 +58,13 @@ const createUser = async (req, res) => {
             logger.error('Invalid request authorization parameters for POST');
             return res.status(400).header('Cache-Control', 'no-cache').send();
         }
-        const allowedFields = ['first_name', 'last_name', 'email', 'password', 'account_created', 'account_updated'];
+        const allowedFields = ['first_name', 'last_name', 'email', 'password', 'account_created', 'account_updated', 'isTest'];
         const unexpectedFields = Object.keys(req.body).filter(
             (field) => !allowedFields.includes(field)
         );
         res.set("cache-control", "no-cache");
         if (unexpectedFields.length > 0) {
-            logger.error("Error updating user by ID: Invalid request or ID format.");
+            logger.error("Unexpected fields in the request body");
             return res.status(400).json({
                 message: "Unexpected fields in the request body",
                 unexpectedFields
@@ -105,17 +107,41 @@ const createUser = async (req, res) => {
             username: req.body.email,
             password: hashedPassword
         }
-        const newUser = await User.create(user);
-        // Deleting the password from object before returning response
-        delete newUser.dataValues.password;
-        logger.info("User created successfully");
-        return res.status(201).json(newUser);
+        const foundUser = await User.findOne({ where: { username: req.body.email } });
+        if (foundUser) {
+            logger.error("User with email address already exists");
+            return res.status(400).json({ message: "User with email address already exists" });
+        }
+        // Checking if the request is a test request, if not, publish message to PubSub
+        if (req.body.isTest == null || req.body.isTest == false) {
+            // Publishing message to PubSub
+            const message = {
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                email: req.body.email
+            }
+            const publishResult = await publishMessage(message);
+            if (!publishResult.success) {
+                logger.error(`Error publishing message to Pub/Sub: ${publishResult.message}`);
+                return res.status(503).json({ error: publishResult.message });
+            } else {
+                const newUser = await User.create(user);
+                // Deleting the password from object before returning response
+                delete newUser.dataValues.password;
+                logger.info("User created successfully");
+                return res.status(201).json(newUser);
+            }
+        } else {
+            const newUser = await User.create(user);
+            logger.info("User created successfully");
+            return res.status(201).json(newUser);
+        }
     } catch (error) {
         logger.error("Error creating user:", error.message);
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(400).json({ message: "User with email address already exists" });
         }
-        return res.status(503).json({});
+        return res.status(503).json({ error: error.message });
     }
 }
 
@@ -194,8 +220,49 @@ const updateUserById = async (req, res) => {
     }
 }
 
+const verifyAccount = async (req, res) => {
+    logger.info("Entered verifyAccount");
+    console.log("Entered verifyAccount");
+    const { token, email } = req.query;
+    try {
+        const emailRecord = await Email.findOne({ where: { token } });
+        if (!emailRecord) {
+            logger.error("Error verifying account: Token not found");
+            return res.status(401).json({ message: 'Invalid or expired token' });
+        }
+        const tokenTimestamp = emailRecord.token_timestamp;
+        const currentTime = Date.now();
+        const tokenAge = currentTime - tokenTimestamp;
+        console.log("Token Age: ", tokenAge);
+        const tokenValidityPeriod = 0.5 * 60 * 1000; // 2 minutes in milliseconds
+        console.log("Token Validity Period: ", tokenValidityPeriod);
+        if (tokenAge > tokenValidityPeriod) {
+            logger.error("Error verifying account: Token expired");
+            return res.status(401).json({ message: 'Invalid or expired token' });
+        }
+
+        // Check if the email from the token matches the email from the query parameters
+        if (emailRecord.receiver_email !== email) {
+            logger.error("Error verifying account: Email mismatch");
+            return res.status(400).json({ message: 'Email mismatch' });
+        }
+
+        // Update account verification status in the database
+        await User.update({ account_verified: true }, {
+            where: { username: email }
+        });
+        logger.info("Account verified successfully");
+        console.log("Account verified successfully");
+        return res.status(200).json({ message: 'Account verified' });
+    } catch (error) {
+        logger.error("Error verifying account:", error.message);
+        return res.status(503).json({});
+    }
+}
+
 module.exports = {
     getUserById,
     createUser,
-    updateUserById
+    updateUserById,
+    verifyAccount
 };
