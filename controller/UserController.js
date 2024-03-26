@@ -222,7 +222,6 @@ const updateUserById = async (req, res) => {
 
 const verifyAccount = async (req, res) => {
     logger.info("Entered verifyAccount");
-    console.log("Entered verifyAccount");
     const { token, email } = req.query;
     try {
         const emailRecord = await Email.findOne({ where: { token } });
@@ -233,9 +232,8 @@ const verifyAccount = async (req, res) => {
         const tokenTimestamp = emailRecord.token_timestamp;
         const currentTime = Date.now();
         const tokenAge = currentTime - tokenTimestamp;
-        console.log("Token Age: ", tokenAge);
-        const tokenValidityPeriod = 0.5 * 60 * 1000; // 2 minutes in milliseconds
-        console.log("Token Validity Period: ", tokenValidityPeriod);
+        const tokenExpiry = process.env.TOKEN_EXPIRY;
+        const tokenValidityPeriod = tokenExpiry * 60 * 1000; // 2 minutes in milliseconds
         if (tokenAge > tokenValidityPeriod) {
             logger.error("Error verifying account: Token expired");
             return res.status(401).json({ message: 'Invalid or expired token' });
@@ -252,7 +250,6 @@ const verifyAccount = async (req, res) => {
             where: { username: email }
         });
         logger.info("Account verified successfully");
-        console.log("Account verified successfully");
         return res.status(200).json({ message: 'Account verified' });
     } catch (error) {
         logger.error("Error verifying account:", error.message);
