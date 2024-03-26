@@ -27,6 +27,12 @@ function basicAuthenticator(req, res, next) {
         logger.error('Unauthorised User (Invalid Password)');
         return res.status(401).json({ message: 'Unauthorized' });
       }
+
+      const isAccountVerified = User.account_verified;
+      if (!isAccountVerified) {
+        logger.error('Account not verified');
+        return res.status(403).json({ message: 'Account not verified' });
+      }
       console.log('User authenticated successfully');
       req.user = User;
       next();

@@ -33,6 +33,10 @@ const User = db.define('User', {
   account_updated: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  account_verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   timestamps: false

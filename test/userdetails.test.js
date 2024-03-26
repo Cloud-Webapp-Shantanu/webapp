@@ -4,6 +4,7 @@ const supertest = require("supertest");
 const request = supertest(app);
 const sequelize = require('../connection.js');
 const { logger } = require('../winston-log/winston');
+const User = require('../model/User.js');
 
 beforeAll(async () => {
     await sequelize.authenticate();
@@ -27,8 +28,12 @@ describe('/v1/user/self endpoint', () => {
                 last_name: 'Doe',
                 email: basicAuthUsername,
                 password: basicAuthPassword,
+                isTest: true
             });
 
+        await User.update({ account_verified: true }, {
+            where: { username: basicAuthUsername }
+        });
         const response = await request.get(getUserEndpoint)
             .set('Authorization', `Basic ${authToken}`)
             .expect(200);
