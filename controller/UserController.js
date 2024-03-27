@@ -112,9 +112,7 @@ const createUser = async (req, res) => {
             logger.error("User with email address already exists");
             return res.status(400).json({ message: "User with email address already exists" });
         }
-        // Checking if the request is a test request, if not, publish message to PubSub
         if (req.body.isTest == null || req.body.isTest == false) {
-            // Publishing message to PubSub
             const message = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
