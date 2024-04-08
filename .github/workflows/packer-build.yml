@@ -1,7 +1,7 @@
 name: Packer Build Custom Image
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -84,4 +84,53 @@ jobs:
 
       - name: Build Packer
         id: build
-        run: packer build .
+        run: |
+          PACKER_OUTPUT=$(packer build .)
+          echo "$PACKER_OUTPUT"
+          IMAGE_ID=$(echo "$PACKER_OUTPUT" | grep 'A disk image was created' | grep -oP 'centos-stream-8-v\d+-\d+-\d+-\d+-\d+')
+          echo "IMAGE_ID=$IMAGE_ID"
+          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+
+      - name: Retrieve Secrets and Store in Env File
+        run: |
+          varenv="/opt/csye6225dir/webapp/.env"
+          > "$varenv"
+          {
+            echo DB_NAME=$(gcloud secrets versions access latest --secret="DB_NAME" --format="value(payload.data)")
+            echo DB_USER=$(gcloud secrets versions access latest --secret="DB_USER" --format="value(payload.data)")
+            echo DB_PASSWORD=$(gcloud secrets versions access latest --secret="DB_PASSWORD" --format="value(payload.data)")
+            echo DB_PORT=$(gcloud secrets versions access latest --secret="DB_PORT" --format="value(payload.data)")
+            echo DB_HOST=$(gcloud secrets versions access latest --secret="DB_HOST" --format="value(payload.data)")
+            echo PUBSUB_TOPIC_NAME=$(gcloud secrets versions access latest --secret="PUBSUB_TOPIC_NAME" --format="value(payload.data)")
+            echo TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")
+          } >> "$varenv"
+
+      - name: Create New Instance Template Version
+        run: |
+          source /opt/csye6225dir/webapp/.env
+          metadata="DB_NAME=$DB_NAME,DB_USER=$DB_USER,DB_PASSWORD=$DB_PASSWORD,DB_PORT=$DB_PORT,DB_HOST=$DB_HOST,PUBSUB_TOPIC_NAME=$PUBSUB_TOPIC_NAME,TOKEN_EXPIRY=$TOKEN_EXPIRY;systemctl daemon-reload;systemctl enable webapp.service;systemctl start webapp.service"
+          source $GITHUB_ENV
+          gcloud compute instance-templates create webapp-instance-template-2 \
+          --region=us-east1 \
+          --metadata="$metadata" \
+          --instance-template-region==us-east1 \
+          --image=$IMAGE_ID \
+          --project=cloud-webapp-dev
+
+      - name: Update Managed Instance Group with New Template
+        run: gcloud compute instance-groups managed set-instance-template webapp_instance_group_manager \
+          --template=webapp-instance-template-2 \
+          --region=us-east1
+
+      - name: Re-create Instances in Managed Instance Group
+        run: gcloud compute instance-groups managed rolling-action start-update webapp_instance_group_manager \
+          --version=template=webapp-instance-template-2 \
+          --region=us-east1
+
+      - name: Wait for Instance Refresh Completion
+        run: |
+          gcloud compute instance-groups managed wait-until webapp_instance_group_manager \
+          --version-target-reached \
+          --region=us-east1
+  
+       
