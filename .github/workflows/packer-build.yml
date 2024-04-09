@@ -103,40 +103,45 @@ jobs:
           
           source $GITHUB_ENV
           gcloud compute instance-templates create webapp-instance-template-2 \
-          --instance-template-region=us-east1 \
-          --image=$IMAGE_ID \
-          --project=cloud-webapp-dev \
-          --machine-type=e2-medium \
-          --boot-disk-size=50GB \
-          --boot-disk-type=pd-ssd \
-          --subnet=webapp-subnet \
-          --metadata=startup-script='#! /bin/bash
-          varenv="/opt/csye6225dir/webapp/.env"
-          > "$varenv"
-          {
-            echo "DB_NAME: ${DB_NAME}"
-            echo "DB_USER: ${DB_USER}"
-            echo "DB_PASSWORD: ${DB_PASSWORD}"
-            echo "DB_PORT: ${DB_PORT}"
-            echo "DB_HOST: ${DB_HOST}"
-            echo "ENV: prod"
-            echo "PUBSUB_TOPIC_NAME: ${PUBSUB_TOPIC_NAME}"
-            echo "TOKEN_EXPIRY: ${TOKEN_EXPIRY}"
-          } >> "$varenv"
+            --instance-template-region=us-east1 \
+            --image=projects/cloud-webapp-dev/global/images/$IMAGE_ID \
+            --project=cloud-webapp-dev \
+            --machine-type=e2-medium \
+            --boot-disk-size=50GB \
+            --boot-disk-type=pd-ssd \
+            --subnet=webapp-subnet \
+            --region=us-east1 \
+            --network-interface=network=webapp-network,network-tier=PREMIUM,subnet=webapp-subnet \
+            --service-account=logging-sa@cloud-webapp-dev.iam.gserviceaccount.com \
+            --tags=webapp,allow-health-check \
+            --scopes=https://www.googleapis.com/auth/cloud-platform \
+            --metadata=startup-script='#! /bin/bash
+            varenv="/opt/csye6225dir/webapp/.env"
+            > "$varenv"
+            {
+              echo "DB_NAME: ${DB_NAME}"
+              echo "DB_USER: ${DB_USER}"
+              echo "DB_PASSWORD: ${DB_PASSWORD}"
+              echo "DB_PORT: ${DB_PORT}"
+              echo "DB_HOST: ${DB_HOST}"
+              echo "ENV: prod"
+              echo "PUBSUB_TOPIC_NAME: ${PUBSUB_TOPIC_NAME}"
+              echo "TOKEN_EXPIRY: ${TOKEN_EXPIRY}"
+            } >> "$varenv"
 
-          systemctl daemon-reload
-          systemctl enable webapp.service
-          systemctl start webapp.service
-          EOF'
+            systemctl daemon-reload
+            systemctl enable webapp.service
+            systemctl start webapp.service
+            EOF'
 
       - name: Update Managed Instance Group with New Template
         run: gcloud compute instance-groups managed set-instance-template webapp_instance_group_manager \
-          --template=webapp-instance-template-2 \
+          --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
           --region=us-east1
 
       - name: Re-create Instances in Managed Instance Group
         run: gcloud compute instance-groups managed rolling-action start-update webapp_instance_group_manager \
-          --version=template=webapp-instance-template-2 \
+          --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
           --region=us-east1
 
       - name: Wait for Instance Refresh Completion
