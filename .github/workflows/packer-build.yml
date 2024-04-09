@@ -102,6 +102,7 @@ jobs:
           echo TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")
           
           source $GITHUB_ENV
+          echo "$IMAGE_ID"
           gcloud compute instance-templates create webapp-instance-template-2 \
             --instance-template-region=us-east1 \
             --project=cloud-webapp-dev \
