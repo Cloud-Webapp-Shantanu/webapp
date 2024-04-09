@@ -101,32 +101,34 @@ jobs:
           echo PUBSUB_TOPIC_NAME=$(gcloud secrets versions access latest --secret="PUBSUB_TOPIC_NAME" --format="value(payload.data)")
           echo TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")
           
-          metadata = $(cat<<-EOF
-            #!/bin/bash
-
-            varenv="/opt/csye6225dir/webapp/.env"
-            > "$varenv"
-            {
-              echo "DB_NAME: ${DB_NAME}"
-              echo "DB_USER: ${DB_USER}"
-              echo "DB_PASSWORD: ${DB_PASSWORD}"
-              echo "DB_PORT: ${DB_PORT}"
-              echo "DB_HOST: ${DB_HOST}"
-              echo "ENV: prod"
-              echo "PUBSUB_TOPIC_NAME: ${PUBSUB_TOPIC_NAME}"
-              echo "TOKEN_EXPIRY: ${TOKEN_EXPIRY}"
-            } >> "$varenv"
-
-            systemctl daemon-reload;systemctl enable webapp.service;systemctl start webapp.service
-            EOF
-          )
           source $GITHUB_ENV
           gcloud compute instance-templates create webapp-instance-template-2 \
           --region=us-east1 \
-          --metadata="$metadata" \
+          --metadata=startup-script='#! /bin/bash
+          varenv="/opt/csye6225dir/webapp/.env"
+          > "$varenv"
+          {
+            echo "DB_NAME: ${DB_NAME}"
+            echo "DB_USER: ${DB_USER}"
+            echo "DB_PASSWORD: ${DB_PASSWORD}"
+            echo "DB_PORT: ${DB_PORT}"
+            echo "DB_HOST: ${DB_HOST}"
+            echo "ENV: prod"
+            echo "PUBSUB_TOPIC_NAME: ${PUBSUB_TOPIC_NAME}"
+            echo "TOKEN_EXPIRY: ${TOKEN_EXPIRY}"
+          } >> "$varenv"
+
+          systemctl daemon-reload
+          systemctl enable webapp.service
+          systemctl start webapp.service
+          EOF'
           --instance-template-region==us-east1 \
           --image=$IMAGE_ID \
           --project=cloud-webapp-dev
+          --machine-type=e2-standard-4 \
+          --boot-disk-size=50GB
+          --boot-disk-type=pd-ssd
+          --subnet=webapp-subnet
 
       - name: Update Managed Instance Group with New Template
         run: gcloud compute instance-groups managed set-instance-template webapp_instance_group_manager \
