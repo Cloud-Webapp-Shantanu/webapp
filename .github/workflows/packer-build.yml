@@ -87,7 +87,7 @@ jobs:
         run: |
           PACKER_OUTPUT=$(packer build .)
           echo "$PACKER_OUTPUT"
-          IMAGE_ID=$(echo "$PACKER_OUTPUT" | grep 'A disk image was created' | grep -oP 'centos-stream-8-v\d+-\d+-\d+-\d+-\d+')
+          IMAGE_ID=$(echo "$PACKER_OUTPUT" | grep 'A disk image was created' | grep -oP 'centos-stream-8-v\d+-\d+-\d+-\d+-\d+-\d+-\d+-\d+')
           echo "IMAGE_ID=$IMAGE_ID"
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
 
