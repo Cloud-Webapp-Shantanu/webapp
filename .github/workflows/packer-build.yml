@@ -137,10 +137,10 @@ jobs:
             systemctl start webapp.service
             EOF'
 
-      - name: Update Managed Instance Group with New Template
-        run: gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
-              --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
-              --region=us-east1
+      # - name: Update Managed Instance Group with New Template
+      #   run: gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
+      #         --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+      #         --region=us-east1
 
       - name: Re-create Instances in Managed Instance Group
         run: gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
