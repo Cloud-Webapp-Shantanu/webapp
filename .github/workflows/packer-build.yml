@@ -89,7 +89,7 @@ jobs:
           echo "$PACKER_OUTPUT"
           IMAGE_ID=$(echo "$PACKER_OUTPUT" | grep 'A disk image was created' | grep -oP 'centos-stream-8-v\d+-\d+-\d+-\d+-\d+-\d+-\d+')
           echo "IMAGE_ID=$IMAGE_ID"
-          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_OUTPUT
       
       - name: Getting Gcloud Secrets
         id: gcloud_secrets
@@ -104,8 +104,6 @@ jobs:
 
       - name: Create New Instance Template Version
         run: |
-          source $GITHUB_ENV
-          echo "$IMAGE_ID"
           gcloud compute instance-templates create webapp-instance-template-2 \
             --instance-template-region=us-east1 \
             --project=cloud-webapp-dev \
@@ -113,7 +111,7 @@ jobs:
             --boot-disk-size=50GB \
             --boot-disk-type=pd-balanced \
             --region=us-east1 \
-            --image=projects/cloud-webapp-dev/global/images/$IMAGE_ID \
+            --image=projects/cloud-webapp-dev/global/images/${{steps.build.outputs.IMAGE_ID}} \
             --network-interface network=webapp-vpc-1,network-tier=PREMIUM,subnet=webapp-subnet \
             --service-account=logging-sa@cloud-webapp-dev.iam.gserviceaccount.com \
             --tags=webapp,allow-health-check \
@@ -137,19 +135,22 @@ jobs:
             systemctl start webapp.service
             EOF'
 
-      # - name: Update Managed Instance Group with New Template
-      #   run: gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
-      #         --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
-      #         --region=us-east1
+      - name: Update Managed Instance Group with New Template
+        run: |
+          gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
+            --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+            --region=us-east1
 
       - name: Re-create Instances in Managed Instance Group
-        run: gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
-              --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
-              --region=us-east1
+        run: |
+          gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
+            --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+            --region=us-east1
 
       - name: Wait for Instance Refresh Completion
-        run: gcloud compute instance-groups managed wait-until webapp-instance-group-manager \
-              --version-target-reached \
-              --region=us-east1
+        run: |
+          gcloud compute instance-groups managed wait-until webapp-instance-group-manager \
+            --version-target-reached \
+            --region=us-east1
   
        
