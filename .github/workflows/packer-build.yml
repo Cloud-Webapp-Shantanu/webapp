@@ -106,8 +106,7 @@ jobs:
         id: create_template
         run: |
           uuid=$(uuidgen | tr '[:upper:]' '[:lower:]' | tr -d '-')
-          echo "::set-output name=unique_id::$uuid"
-          TEMPLATE_NAME = "webapp-instance-template-$uuid"
+          TEMPLATE_NAME="webapp-instance-template-$uuid"
           echo "TEMPLATE_NAME=$TEMPLATE_NAME" >> $GITHUB_OUTPUT
           gcloud compute instance-templates create $TEMPLATE_NAME \
             --instance-template-region=us-east1 \
