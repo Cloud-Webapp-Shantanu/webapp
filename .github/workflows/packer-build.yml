@@ -103,8 +103,11 @@ jobs:
           echo "TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")" >> $GITHUB_OUTPUT
 
       - name: Create New Instance Template Version
+        id: create_template
         run: |
-          gcloud compute instance-templates create webapp-instance-template-2 \
+          TEMPLATE_NAME = "webapp-instance-template-${{ github.run_id }}"
+          echo "TEMPLATE_NAME=$TEMPLATE_NAME" >> $GITHUB_OUTPUT
+          gcloud compute instance-templates create $TEMPLATE_NAME \
             --instance-template-region=us-east1 \
             --project=cloud-webapp-dev \
             --machine-type=e2-medium \
@@ -136,18 +139,21 @@ jobs:
             EOF'
 
       - name: Update Managed Instance Group with New Template
+        id: update_group
         run: |
           gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
-            --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+            --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
             --region=us-east1
 
       - name: Re-create Instances in Managed Instance Group
+        id: start_update
         run: |
           gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
-            --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+            --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
             --region=us-east1
 
       - name: Wait for Instance Refresh Completion
+        id: wait
         run: |
           gcloud compute instance-groups managed wait-until webapp-instance-group-manager \
             --version-target-reached \
