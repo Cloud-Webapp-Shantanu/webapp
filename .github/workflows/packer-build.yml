@@ -1,7 +1,7 @@
 name: Packer Build Custom Image
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -101,6 +101,18 @@ jobs:
           echo "DB_HOST=$(gcloud secrets versions access latest --secret="DB_HOST" --format="value(payload.data)")" >> $GITHUB_OUTPUT
           echo "PUBSUB_TOPIC_NAME=$(gcloud secrets versions access latest --secret="PUBSUB_TOPIC_NAME" --format="value(payload.data)")" >> $GITHUB_OUTPUT
           echo "TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "BOOT_DISK_SIZE=$(gcloud secrets versions access latest --secret="BOOT_DISK_SIZE" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "BOOT_DISK_TYPE=$(gcloud secrets versions access latest --secret="BOOT_DISK_TYPE" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "MACHINE_TYPE=$(gcloud secrets versions access latest --secret="MACHINE_TYPE" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "NETWORK=$(gcloud secrets versions access latest --secret="NETWORK" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "NETWORK_TIER=$(gcloud secrets versions access latest --secret="NETWORK_TIER" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "PROJECT=$(gcloud secrets versions access latest --secret="PROJECT" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "REGION=$(gcloud secrets versions access latest --secret="REGION" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "VM_INSTANCE_TAGS=$(gcloud secrets versions access latest --secret="VM_INSTANCE_TAGS" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "VM_SERVICE_ACCOUNT_EMAIL=$(gcloud secrets versions access latest --secret="VM_SERVICE_ACCOUNT_EMAIL" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "VM_SERVICE_ACCOUNT_SCOPES=$(gcloud secrets versions access latest --secret="VM_SERVICE_ACCOUNT_SCOPES" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "WEBAPP_SUBNET=$(gcloud secrets versions access latest --secret="WEBAPP_SUBNET" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "INSTANCE_GROUP_MANAGER=$(gcloud secrets versions access latest --secret="INSTANCE_GROUP_MANAGER" --format="value(payload.data)")" >> $GITHUB_OUTPUT
 
       - name: Create New Instance Template Version
         id: create_template
@@ -109,17 +121,17 @@ jobs:
           TEMPLATE_NAME="webapp-instance-template-$uuid"
           echo "TEMPLATE_NAME=$TEMPLATE_NAME" >> $GITHUB_OUTPUT
           gcloud compute instance-templates create $TEMPLATE_NAME \
-            --instance-template-region=us-east1 \
-            --project=cloud-webapp-dev \
-            --machine-type=e2-medium \
-            --boot-disk-size=50GB \
-            --boot-disk-type=pd-balanced \
-            --region=us-east1 \
-            --image=projects/cloud-webapp-dev/global/images/${{steps.build.outputs.IMAGE_ID}} \
-            --network-interface network=webapp-vpc-1,network-tier=PREMIUM,subnet=webapp-subnet \
-            --service-account=logging-sa@cloud-webapp-dev.iam.gserviceaccount.com \
-            --tags=webapp,allow-health-check \
-            --scopes=https://www.googleapis.com/auth/cloud-platform \
+            --instance-template-region=${{steps.gcloud_secrets.outputs.REGION}} \
+            --project=${{steps.gcloud_secrets.outputs.PROJECT}} \
+            --machine-type=${{steps.gcloud_secrets.outputs.MACHINE_TYPE}} \
+            --boot-disk-size=${{steps.gcloud_secrets.outputs.BOOT_DISK_SIZE}} \
+            --boot-disk-type=${{steps.gcloud_secrets.outputs.BOOT_DISK_TYPE}} \
+            --region=${{steps.gcloud_secrets.outputs.REGION}} \
+            --image=projects/${{steps.gcloud_secrets.outputs.PROJECT}}/global/images/${{steps.build.outputs.IMAGE_ID}} \
+            --network-interface network=${{steps.gcloud_secrets.outputs.NETWORK}},network-tier=${{steps.gcloud_secrets.outputs.NETWORK_TIER}},subnet=${{steps.gcloud_secrets.outputs.WEBAPP_SUBNET}} \
+            --service-account=${{steps.gcloud_secrets.outputs.VM_SERVICE_ACCOUNT_EMAIL}}\
+            --tags=${{steps.gcloud_secrets.outputs.VM_INSTANCE_TAGS}} \
+            --scopes=${{steps.gcloud_secrets.outputs.VM_SERVICE_ACCOUNT_SCOPES}}\
             --metadata=startup-script='#! /bin/bash
             varenv="/opt/csye6225dir/webapp/.env"
             > "$varenv"
@@ -142,22 +154,22 @@ jobs:
       - name: Update Managed Instance Group with New Template
         id: update_group
         run: |
-          gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
-            --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
-            --region=us-east1
+          gcloud compute instance-groups managed set-instance-template ${{steps.gcloud_secrets.outputs.INSTANCE_GROUP_MANAGER}} \
+            --template=projects/${{steps.gcloud_secrets.outputs.PROJECT}}/regions/${{steps.gcloud_secrets.outputs.REGION}}/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
+            --region=${{steps.gcloud_secrets.outputs.REGION}}
 
       - name: Re-create Instances in Managed Instance Group
         id: start_update
         run: |
-          gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
-            --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
-            --region=us-east1
+          gcloud compute instance-groups managed rolling-action start-update ${{steps.gcloud_secrets.outputs.INSTANCE_GROUP_MANAGER}} \
+            --version=template=projects/${{steps.gcloud_secrets.outputs.PROJECT}}/regions/${{steps.gcloud_secrets.outputs.REGION}}/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
+            --region=${{steps.gcloud_secrets.outputs.REGION}}
 
       - name: Wait for Instance Refresh Completion
         id: wait
         run: |
-          gcloud compute instance-groups managed wait-until webapp-instance-group-manager \
+          gcloud compute instance-groups managed wait-until ${{steps.gcloud_secrets.outputs.INSTANCE_GROUP_MANAGER}} \
             --version-target-reached \
-            --region=us-east1
+            --region=${{steps.gcloud_secrets.outputs.REGION}}
   
        

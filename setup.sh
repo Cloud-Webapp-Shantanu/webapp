@@ -5,7 +5,7 @@
 echo "================================================================="
 echo "Updating packages"
 echo "================================================================="
-# sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
+sudo yum update -y || { echo "Package update failed. Exiting."; exit 1; }
 
 echo "================================================================="
 echo "Install Node, npm, and unzip"
