@@ -113,7 +113,6 @@ jobs:
           echo "VM_SERVICE_ACCOUNT_SCOPES=$(gcloud secrets versions access latest --secret="VM_SERVICE_ACCOUNT_SCOPES" --format="value(payload.data)")" >> $GITHUB_OUTPUT
           echo "WEBAPP_SUBNET=$(gcloud secrets versions access latest --secret="WEBAPP_SUBNET" --format="value(payload.data)")" >> $GITHUB_OUTPUT
           echo "INSTANCE_GROUP_MANAGER=$(gcloud secrets versions access latest --secret="INSTANCE_GROUP_MANAGER" --format="value(payload.data)")" >> $GITHUB_OUTPUT
-          echo "KEY_RING_NAME=$(gcloud secrets versions access latest --secret="KEY_RING_NAME" --format="value(payload.data)")" >> $GITHUB_OUTPUT
           echo "INSTANCE_KMS_KEY=$(gcloud secrets versions access latest --secret="INSTANCE_KMS_KEY" --format="value(payload.data)")" >> $GITHUB_OUTPUT
 
       - name: Create New Instance Template Version
@@ -134,7 +133,7 @@ jobs:
             --service-account=${{steps.gcloud_secrets.outputs.VM_SERVICE_ACCOUNT_EMAIL}}\
             --tags=${{steps.gcloud_secrets.outputs.VM_INSTANCE_TAGS}} \
             --scopes=${{steps.gcloud_secrets.outputs.VM_SERVICE_ACCOUNT_SCOPES}} \
-            --boot-disk-kms-key=projects/${{steps.gcloud_secrets.outputs.PROJECT}}/locations/${{steps.gcloud_secrets.outputs.REGION}}/keyRings/${{steps.gcloud_secrets.outputs.KEY_RING_NAME}}/cryptoKeys/${{steps.gcloud_secrets.outputs.INSTANCE_KMS_KEY}} \
+            --boot-disk-kms-key=${{steps.gcloud_secrets.outputs.INSTANCE_KMS_KEY}} \
             --metadata=startup-script='#! /bin/bash
             varenv="/opt/csye6225dir/webapp/.env"
             > "$varenv"
