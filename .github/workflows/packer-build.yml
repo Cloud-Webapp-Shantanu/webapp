@@ -165,6 +165,7 @@ jobs:
         run: |
           gcloud compute instance-groups managed rolling-action start-update ${{steps.gcloud_secrets.outputs.INSTANCE_GROUP_MANAGER}} \
             --version=template=projects/${{steps.gcloud_secrets.outputs.PROJECT}}/regions/${{steps.gcloud_secrets.outputs.REGION}}/instanceTemplates/${{steps.create_template.outputs.TEMPLATE_NAME}} \
+            --max-unavailable=0 \
             --region=${{steps.gcloud_secrets.outputs.REGION}}
 
       - name: Wait for Instance Refresh Completion
