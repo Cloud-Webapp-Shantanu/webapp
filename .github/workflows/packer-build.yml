@@ -90,17 +90,20 @@ jobs:
           IMAGE_ID=$(echo "$PACKER_OUTPUT" | grep 'A disk image was created' | grep -oP 'centos-stream-8-v\d+-\d+-\d+-\d+-\d+-\d+-\d+')
           echo "IMAGE_ID=$IMAGE_ID"
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+      
+      - name: Getting Gcloud Secrets
+        id: gcloud_secrets
+        run: |
+          echo "DB_NAME=$(gcloud secrets versions access latest --secret="DB_NAME" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "DB_USER=$(gcloud secrets versions access latest --secret="DB_USER" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "DB_PASSWORD=$(gcloud secrets versions access latest --secret="DB_PASSWORD" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "DB_PORT=$(gcloud secrets versions access latest --secret="DB_PORT" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "DB_HOST=$(gcloud secrets versions access latest --secret="DB_HOST" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "PUBSUB_TOPIC_NAME=$(gcloud secrets versions access latest --secret="PUBSUB_TOPIC_NAME" --format="value(payload.data)")" >> $GITHUB_OUTPUT
+          echo "TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")" >> $GITHUB_OUTPUT
 
       - name: Create New Instance Template Version
         run: |
-          echo DB_NAME=$(gcloud secrets versions access latest --secret="DB_NAME" --format="value(payload.data)")
-          echo DB_USER=$(gcloud secrets versions access latest --secret="DB_USER" --format="value(payload.data)")
-          echo DB_PASSWORD=$(gcloud secrets versions access latest --secret="DB_PASSWORD" --format="value(payload.data)")
-          echo DB_PORT=$(gcloud secrets versions access latest --secret="DB_PORT" --format="value(payload.data)")
-          echo DB_HOST=$(gcloud secrets versions access latest --secret="DB_HOST" --format="value(payload.data)")
-          echo PUBSUB_TOPIC_NAME=$(gcloud secrets versions access latest --secret="PUBSUB_TOPIC_NAME" --format="value(payload.data)")
-          echo TOKEN_EXPIRY=$(gcloud secrets versions access latest --secret="TOKEN_EXPIRY" --format="value(payload.data)")
-          
           source $GITHUB_ENV
           echo "$IMAGE_ID"
           gcloud compute instance-templates create webapp-instance-template-2 \
@@ -119,14 +122,14 @@ jobs:
             varenv="/opt/csye6225dir/webapp/.env"
             > "$varenv"
             {
-              echo "DB_NAME: ${DB_NAME}"
-              echo "DB_USER: ${DB_USER}"
-              echo "DB_PASSWORD: ${DB_PASSWORD}"
-              echo "DB_PORT: ${DB_PORT}"
-              echo "DB_HOST: ${DB_HOST}"
+              echo "DB_NAME: ${{steps.gcloud_secrets.outputs.DB_NAME}}"
+              echo "DB_USER: ${{steps.gcloud_secrets.outputs.DB_USER}}"
+              echo "DB_PASSWORD: ${{steps.gcloud_secrets.outputs.DB_PASSWORD}}"
+              echo "DB_PORT: ${{steps.gcloud_secrets.outputs.DB_PORT}}"
+              echo "DB_HOST: ${{steps.gcloud_secrets.outputs.DB_HOST}}"
               echo "ENV: prod"
-              echo "PUBSUB_TOPIC_NAME: ${PUBSUB_TOPIC_NAME}"
-              echo "TOKEN_EXPIRY: ${TOKEN_EXPIRY}"
+              echo "PUBSUB_TOPIC_NAME: ${{steps.gcloud_secrets.outputs.PUBSUB_TOPIC_NAME}}"
+              echo "TOKEN_EXPIRY: ${{steps.gcloud_secrets.outputs.TOKEN_EXPIRY}}"
             } >> "$varenv"
 
             systemctl daemon-reload
@@ -135,18 +138,18 @@ jobs:
             EOF'
 
       - name: Update Managed Instance Group with New Template
-        run: gcloud compute instance-groups managed set-instance-template webapp_instance_group_manager \
-          --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
-          --region=us-east1
+        run: gcloud compute instance-groups managed set-instance-template webapp-instance-group-manager \
+              --template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+              --region=us-east1
 
       - name: Re-create Instances in Managed Instance Group
         run: gcloud compute instance-groups managed rolling-action start-update webapp-instance-group-manager \
-          --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
-          --region=us-east1
+              --version=template=projects/cloud-webapp-dev/regions/us-east1/instanceTemplates/webapp-instance-template-2 \
+              --region=us-east1
 
       - name: Wait for Instance Refresh Completion
         run: gcloud compute instance-groups managed wait-until webapp-instance-group-manager \
-          --version-target-reached \
-          --region=us-east1
+              --version-target-reached \
+              --region=us-east1
   
        
