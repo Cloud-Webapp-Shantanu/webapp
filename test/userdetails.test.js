@@ -15,13 +15,13 @@ afterAll((done) => {
 });
 
 describe('/v1/user/self endpoint', () => {
-    const getUserEndpoint = '/v1/user/self';
-    const getPostUserEndpoint = '/v1/user';
+    const getUserEndpoint = '/v8/user/self';
+    const getPostUserEndpoint = '/v8/user';
     const basicAuthUsername = 'testuser@gmail.com';
     const basicAuthPassword = 'password';
     let authToken = Buffer.from(`${basicAuthUsername}:${basicAuthPassword}`).toString('base64');;
 
-    test('Test 1 - GET /v1/user/self - Validate account exists', async () => {
+    test('Test 1 - GET /v8/user/self - Validate account exists', async () => {
         const user = await request.post(getPostUserEndpoint)
             .send({
                 first_name: 'John',
@@ -44,7 +44,7 @@ describe('/v1/user/self endpoint', () => {
         logger.warn('Entries in the database need to deleted after the test');
     });
 
-    test('Test 2 - PUT /v1/user/self - Validate account was updated', async () => {
+    test('Test 2 - PUT /v8/user/self - Validate account was updated', async () => {
         const updateResponse = await request.put(getUserEndpoint)
             .send({
                 first_name: 'UpdatedJohn',
